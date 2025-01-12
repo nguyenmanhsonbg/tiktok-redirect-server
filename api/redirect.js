@@ -1,4 +1,4 @@
-vconst express = require("express");
+const express = require("express");
 const app = express();
 
 // API route để xử lý redirect
@@ -32,7 +32,7 @@ app.get("/", (req, res) => {
     res.redirect(redirectUrl);
 });
 
-// Export serverless function cho Vercel
+// Export serverless function
 module.exports = (req, res) => {
     app(req, res);
 };
