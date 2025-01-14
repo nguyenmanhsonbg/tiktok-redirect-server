@@ -1,9 +1,0 @@
-[
-  {
-    "shopId": "aa",
-    "productId": "aa",
-    "deepLink": "shopee://product/aa/aa",
-    "webLink": "https://shopee.vn/product/aa/aa",
-    "shortCode": "aa_aa"
-  }
-]

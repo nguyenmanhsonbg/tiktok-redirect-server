@@ -4,7 +4,7 @@ const uri = "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/
 const client = new MongoClient(uri);
 
 module.exports = async (req, res) => {
-  if (req.method !== "GET") {
+  if (req.method !== "DELETE") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
@@ -19,29 +19,16 @@ module.exports = async (req, res) => {
     const db = client.db("productDatabase");
     const productsCollection = db.collection("products");
 
-    // Find the product by shortCode
-    const product = await productsCollection.findOne({ shortCode: code });
+    const result = await productsCollection.deleteOne({ shortCode: code });
 
-    if (!product) {
+    if (result.deletedCount === 0) {
       return res.status(404).json({ error: "Product not found." });
     }
 
-    const userAgent = req.headers["user-agent"];
-    let redirectUrl;
-
-    // Redirect based on User-Agent
-    if (/iPhone|iPad|iPod/i.test(userAgent)) {
-      redirectUrl = product.deepLink; // iOS
-    } else if (/Android/i.test(userAgent)) {
-      redirectUrl = product.deepLink; // Android
-    } else {
-      redirectUrl = product.webLink; // Desktop
-    }
-
-    res.redirect(redirectUrl);
+    res.status(200).json({ message: "Product deleted successfully." });
   } catch (error) {
-    console.error("Error handling redirect:", error);
-    res.status(500).json({ error: "Failed to handle redirect." });
+    console.error("Error deleting product:", error);
+    res.status(500).json({ error: "Failed to delete product." });
   } finally {
     await client.close();
   }
