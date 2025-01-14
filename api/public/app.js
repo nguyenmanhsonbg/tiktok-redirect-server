@@ -1,7 +1,7 @@
 // Backend API endpoints
-const GET_PRODUCTS_API = "http://tiktok-redirect-server.vercel.app/get-products";
-const ADD_PRODUCT_API = "http://tiktok-redirect-server.vercel.app/add-product";
-const DELETE_PRODUCT_API = "http://tiktok-redirect-server.vercel.app/delete-product";
+const GET_PRODUCTS_API = "https://tiktok-redirect-server.vercel.app/get-products";
+const ADD_PRODUCT_API = "https://tiktok-redirect-server.vercel.app/add-product";
+const DELETE_PRODUCT_API = "https://tiktok-redirect-server.vercel.app/delete-product";
 
 // Default credentials
 const defaultUsername = "admin";
