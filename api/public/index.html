@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Dashboard</title>
+    <button
+      id="logoutButton"
+      style="float: right; margin-bottom: 20px; display: none"
+    >
+      Đăng xuất
+    </button>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        padding: 0;
+        background-color: #f9f9f9;
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      form input,
+      button {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      button {
+        background-color: #ff7b33;
+        color: white;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #f55905;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      table th,
+      table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+      table th {
+        background-color: #f4f4f4;
+      }
+      .actions button {
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" style="display: none">
+      <h1>Product Dashboard</h1>
+      <section>
+        <h2>Thêm sản phẩm mới</h2>
+        <form id="add-product-form">
+          <input type="text" id="shopId" placeholder="Enter Shop ID" required />
+          <input
+            type="text"
+            id="productId"
+            placeholder="Enter Product ID"
+            required
+          />
+          <button type="submit">Thêm sản phẩm</button>
+        </form>
+      </section>
+      <section>
+        <h2>Danh sách sản phẩm</h2>
+        <div style="overflow-x: auto">
+          <!-- Enable horizontal scrolling for small screens -->
+          <table>
+            <thead>
+              <tr>
+                <th>Shop ID</th>
+                <th>Product ID</th>
+                <th>Deep Link</th>
+                <th>Web Link</th>
+                <th>Short Code</th>
+                <th>Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="product-list">
+              <!-- Rows will be dynamically added here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <h2>Đăng nhập</h2>
+        <form id="loginForm">
+          <label for="username">Tên đăng nhập:</label>
+          <input
+            type="text"
+            id="username"
+            placeholder="Enter username"
+            required
+          />
+          <label for="password">Mật khẩu:</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Enter password"
+            required
+          />
+          <button type="submit">Đăng nhập</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
