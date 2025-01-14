@@ -64,13 +64,13 @@ app.post("/add-product", (req, res) => {
 
 // Example API: Get all products
 app.get("/get-products", (req, res) => {
-  const productFile = "product_links.txt";
-  if (!fs.existsSync(productFile)) {
-    return res.status(200).send([]);
-  }
+//   const productFile = "product_links.txt";
+//   if (!fs.existsSync(productFile)) {
+//     return res.status(200).send([]);
+//   }
 
-  const products = JSON.parse(fs.readFileSync(productFile, "utf8"));
-  res.status(200).send(products);
+//   const products = JSON.parse(fs.readFileSync(productFile, "utf8"));
+  res.status(200).send("Product A");
 });
 
 // Example API: Delete a product
