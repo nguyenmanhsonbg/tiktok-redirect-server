@@ -8,21 +8,35 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: "Method not allowed. Use POST." });
   }
 
-  const { webLink, deepLink } = req.body;
+  const { webLink1, webLink2 } = req.body;
 
   // Validate input fields
-  if (!webLink || !deepLink) {
+  if (!webLink1 || !webLink2) {
     return res.status(400).json({
-      error: "Both webLink and deepLink are required.",
+      error: "Both webLink1 and webLink2 are required.",
     });
   }
 
-  // Function to generate a random short code
-  const generateShortCode = () => {
-    return crypto.randomBytes(4).toString("hex"); // Generates an 8-character random string
-  };
-
   try {
+    // Extract shopId and productId from webLink2
+    const match = webLink2.match(/\/product\/(\d+)\/(\d+)/);
+    if (!match) {
+      return res.status(400).json({
+        error: "Invalid webLink2 format. Ensure it follows the format 'https://shopee.vn/product/<shopId>/<productId>'.",
+      });
+    }
+
+    const shopId = match[1];
+    const productId = match[2];
+
+    // Generate the deep link
+    const deepLink = `shopee://product/${shopId}/${productId}`;
+
+    // Function to generate a random short code
+    const generateShortCode = () => {
+      return crypto.randomBytes(4).toString("hex"); // Generates an 8-character random string
+    };
+
     await client.connect();
     const db = client.db("productDatabase");
     const productsCollection = db.collection("products");
@@ -40,7 +54,7 @@ module.exports = async (req, res) => {
     }
 
     // Create a new product entry
-    const newProduct = { webLink, deepLink, shortCode };
+    const newProduct = { shortCode, webLink1, deepLink };
 
     // Insert the new product into MongoDB
     const result = await productsCollection.insertOne(newProduct);

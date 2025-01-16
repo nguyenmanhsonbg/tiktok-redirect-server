@@ -60,15 +60,15 @@ addProductForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   // Get product details from form
-  const shopId = document.getElementById("webLink").value;
-  const productId = document.getElementById("deepLink").value;
+  const webLink1 = document.getElementById("webLink1").value;
+  const webLink2 = document.getElementById("webLink2").value;
 
   try {
     // Send POST request to add product
     const response = await fetch(ADD_PRODUCT_API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ webLink, deepLink }),
+      body: JSON.stringify({ webLink1, webLink2 }),
     });
 
     if (response.ok) {
