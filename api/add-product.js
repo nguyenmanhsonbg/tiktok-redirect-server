@@ -5,7 +5,7 @@ const client = new MongoClient(uri);
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed. Use POST." });
+    return res.status(405).json({ error: "Method not allowed. Use POST123." });
   }
 
   const { webLink1, webLink2 } = req.body;
