@@ -1,6 +1,6 @@
-const GET_PRODUCTS_API = "http://localhost:3000/api/get-products";
-const ADD_PRODUCT_API = "http://localhost:3000/api/add-product";
-const DELETE_PRODUCT_API = "http://localhost:3000/api/delete-product";
+const GET_PRODUCTS_API = "https://tiktok-redirect-server.vercel.app/api/get-products";
+const ADD_PRODUCT_API = "https://tiktok-redirect-server.vercel.app/api/add-product";
+const DELETE_PRODUCT_API = "https://tiktok-redirect-server.vercel.app/api/delete-product";
 
 // Default credentials
 const defaultUsername = "admin";
