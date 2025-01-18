@@ -1,4 +1,5 @@
 const { MongoClient } = require("mongodb");
+const crypto = require("crypto");
 
 const uri = "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Use environment variable for MongoDB connection
 const client = new MongoClient(uri);
@@ -54,7 +55,7 @@ module.exports = async (req, res) => {
     }
 
     // Create a new product entry
-    const newProduct = { shortCode, webLink1, deepLink };
+    const newProduct = { shortCode, webLink:webLink1, deepLink };
 
     // Insert the new product into MongoDB
     const result = await productsCollection.insertOne(newProduct);

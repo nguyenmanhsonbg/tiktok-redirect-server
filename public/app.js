@@ -1,6 +1,6 @@
-const GET_PRODUCTS_API = "https://tiktok-redirect-server.vercel.app/api/get-products";
-const ADD_PRODUCT_API = "https://tiktok-redirect-server.vercel.app/api/add-product";
-const DELETE_PRODUCT_API = "https://tiktok-redirect-server.vercel.app/api/delete-product";
+const GET_PRODUCTS_API = "http://localhost:3000/api/get-products";
+const ADD_PRODUCT_API = "http://localhost:3000/api/add-product";
+const DELETE_PRODUCT_API = "http://localhost:3000/api/delete-product";
 
 // Default credentials
 const defaultUsername = "admin";
@@ -38,7 +38,7 @@ loginForm.addEventListener("submit", (e) => {
   // Get user input
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
-  const a = 1234;
+
   // Validate credentials
   if (username === defaultUsername && password === defaultPassword) {
     // Store login state in localStorage
@@ -100,6 +100,7 @@ function logout() {
 }
 
 // Load product list from the backend
+// Load product list from the backend
 async function loadProductList() {
   try {
     const response = await fetch(GET_PRODUCTS_API);
@@ -113,10 +114,9 @@ async function loadProductList() {
       const row = document.createElement("tr");
 
       row.innerHTML = `
-        <td>${product.shopId}</td>
-        <td>${product.productId}</td>
+        <td>${product._id}</td>
         <td><a href="${product.deepLink}" target="_blank">${product.deepLink}</a></td>
-        <td><a href="${product.webLink}" target="_blank">${product.webLink}</a></td>
+        <td><a href="${product.webLink1}" target="_blank">${product.webLink}</a></td>
         <td>${product.shortCode}</td>
         <td class="actions">
           <button onclick="copyToClipboard('${product.shortCode}')">Copy</button>
@@ -131,6 +131,7 @@ async function loadProductList() {
     alert("Error loading product list. Please try again.");
   }
 }
+
 
 // Copy short code to clipboard
 function copyToClipboard(text) {

@@ -4,9 +4,9 @@ const uri = "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/
 const client = new MongoClient(uri);
 
 module.exports = async (req, res) => {
-  if (req.method !== "GET") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+  // if (req.method !== "GET") {
+  //   return res.status(405).json({ error: "Method not allowed" });
+  // }
 
   try {
     await client.connect();
