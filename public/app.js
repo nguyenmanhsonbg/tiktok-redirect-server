@@ -119,8 +119,9 @@ async function loadProductList() {
         <td><a href="${product.webLink1}" target="_blank">${product.webLink}</a></td>
         <td>${product.shortCode}</td>
         <td class="actions">
-          <button onclick="copyToClipboard('${product.shortCode}')">Copy</button>
+          <button onclick="copyToClipboard('${product.shortCode}')">Copy code</button>
           <button onclick="deleteProduct('${product.shortCode}')">Delete</button>
+          <button onclick="copyToClipboard('https://tiktok-redirect-server.vercel.app/api/redirect?code=${product.shortCode}')">Copy Link</button>
         </td>
       `;
 
