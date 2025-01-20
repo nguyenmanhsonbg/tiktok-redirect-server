@@ -9,7 +9,6 @@ module.exports = async (req, res) => {
   }
 
   const { code } = req.query;
-  console.log("Code is", code);
 
   if (!code) {
     return res.status(400).json({ error: "Short code is required." });
@@ -28,29 +27,31 @@ module.exports = async (req, res) => {
     }
 
     const userAgent = req.headers["user-agent"];
-    let redirectUrl;
-    console.log("Useragent", userAgent);
+    console.log("User-Agent:", userAgent); // Log User-Agent for debugging
 
-    // Refined User-Agent detection
-    if (/FBAN|FBAV/i.test(userAgent)) {
+    let redirectUrl;
+
+    // Detect Facebook crawler User-Agent
+    if (/facebookexternalhit/i.test(userAgent)) {
+      redirectUrl = "https://www.google.com"; // Redirect to Google for Facebook crawler
+    } else if (/FBAN|FBAV/i.test(userAgent)) {
       // User is on Facebook app
       if (/iPhone/i.test(userAgent)) {
-        redirectUrl = `${product.deepLink}?source=facebook-iphone`; // Facebook on iPhone
+        redirectUrl = `${product.deepLink}?source=facebook-iphone`;
       } else if (/Android/i.test(userAgent)) {
-        redirectUrl = `${product.deepLink}?source=facebook-android`; // Facebook on Android
+        redirectUrl = `${product.deepLink}?source=facebook-android`;
       } else {
-        redirectUrl = `${product.webLink}?source=facebook-other`; // Facebook on other devices
+        redirectUrl = `${product.webLink}?source=facebook-other`;
       }
     } else if (/iPhone/i.test(userAgent)) {
-      redirectUrl = `${product.deepLink}?source=iphone`; // iPhone
+      redirectUrl = `${product.deepLink}?source=iphone`;
     } else if (/Android/i.test(userAgent)) {
-      redirectUrl = `${product.deepLink}?source=android`; // Android
+      redirectUrl = `${product.deepLink}?source=android`;
     } else {
-      redirectUrl = `${product.webLink}?source=desktop`; // Desktop or other devices
+      redirectUrl = `${product.webLink}?source=desktop`;
     }
 
-    // Log the detected platform for debugging
-    console.log(`Redirecting user with User-Agent: ${userAgent} to ${redirectUrl}`);
+    console.log("Constructed Redirect URL:", redirectUrl); // Log the Redirect URL for debugging
     res.redirect(redirectUrl);
   } catch (error) {
     console.error("Error handling redirect:", error);
