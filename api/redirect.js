@@ -1,6 +1,6 @@
 const { MongoClient } = require("mongodb");
 
-const uri = "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; 
+const uri = "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const client = new MongoClient(uri);
 
 module.exports = async (req, res) => {
@@ -29,16 +29,26 @@ module.exports = async (req, res) => {
     const userAgent = req.headers["user-agent"];
     let redirectUrl;
 
-    // Redirect based on User-Agent
-    if (/iPhone/i.test(userAgent)) {
-      //redirectUrl = product.deepLink; // iOS
-      redirectUrl = "https://shopee.vn/product/1024077830/17397941748"; // iOS
+    // Refined User-Agent detection
+    if (/FBAN|FBAV/i.test(userAgent)) {
+      // User is on Facebook app
+      if (/iPhone/i.test(userAgent)) {
+        redirectUrl = `${product.deepLink}?source=facebook-iphone`; // Facebook on iPhone
+      } else if (/Android/i.test(userAgent)) {
+        redirectUrl = `${product.deepLink}?source=facebook-android`; // Facebook on Android
+      } else {
+        redirectUrl = `${product.webLink}?source=facebook-other`; // Facebook on other devices
+      }
+    } else if (/iPhone/i.test(userAgent)) {
+      redirectUrl = `${product.deepLink}?source=iphone`; // iPhone
     } else if (/Android/i.test(userAgent)) {
-      redirectUrl = product.deepLink; // Android
+      redirectUrl = `${product.deepLink}?source=android`; // Android
     } else {
-      redirectUrl = product.webLink; // Desktop
+      redirectUrl = `${product.webLink}?source=desktop`; // Desktop or other devices
     }
 
+    // Log the detected platform for debugging
+    console.log(`Redirecting user with User-Agent: ${userAgent} to ${redirectUrl}`);
     res.redirect(redirectUrl);
   } catch (error) {
     console.error("Error handling redirect:", error);
