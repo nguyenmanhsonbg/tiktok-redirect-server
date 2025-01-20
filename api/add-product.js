@@ -1,14 +1,11 @@
 const { MongoClient } = require("mongodb");
 const crypto = require("crypto");
+const axios = require("axios"); // For resolving the shortened link
 
 const uri = "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Use environment variable for MongoDB connection
 const client = new MongoClient(uri);
 
 module.exports = async (req, res) => {
-  // if (req.method !== "POST") {
-  //   return res.status(405).json({ error: "Method not allowed. Use POST123." });
-  // }
-
   const { webLink1, webLink2 } = req.body;
 
   // Validate input fields
@@ -19,11 +16,15 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Extract shopId and productId from webLink2
-    const match = webLink2.match(/\/product\/(\d+)\/(\d+)/);
+    // Resolve the shortened link (webLink2) to its final redirect URL
+    const response = await axios.get(webLink2, { maxRedirects: 5 });
+    const resolvedLink = response.request.res.responseUrl;
+
+    // Extract shopId and productId from the resolved link
+    const match = resolvedLink.match(/\/product\/(\d+)\/(\d+)/);
     if (!match) {
       return res.status(400).json({
-        error: "Invalid webLink2 format. Ensure it follows the format 'https://shopee.vn/product/<shopId>/<productId>'.",
+        error: "Invalid resolved link format. Ensure it follows the format 'https://shopee.vn/product/<shopId>/<productId>'.",
       });
     }
 
@@ -55,7 +56,7 @@ module.exports = async (req, res) => {
     }
 
     // Create a new product entry
-    const newProduct = { shortCode, webLink:webLink1, deepLink };
+    const newProduct = { shortCode, webLink: webLink1, deepLink };
 
     // Insert the new product into MongoDB
     const result = await productsCollection.insertOne(newProduct);
