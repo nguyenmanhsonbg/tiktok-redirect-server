@@ -9,6 +9,7 @@ module.exports = async (req, res) => {
   }
 
   const { code } = req.query;
+  console.log("Code is", code);
 
   if (!code) {
     return res.status(400).json({ error: "Short code is required." });
@@ -28,6 +29,7 @@ module.exports = async (req, res) => {
 
     const userAgent = req.headers["user-agent"];
     let redirectUrl;
+    console.log("Useragent", userAgent);
 
     // Refined User-Agent detection
     if (/FBAN|FBAV/i.test(userAgent)) {
