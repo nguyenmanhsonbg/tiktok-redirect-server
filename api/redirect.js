@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
     let redirectUrl;
 
     // Redirect based on User-Agent
-    if (/iPhone|iPad|iPod/i.test(userAgent)) {
+    if (/iPhone/i.test(userAgent)) {
       redirectUrl = product.deepLink; // iOS
     } else if (/Android/i.test(userAgent)) {
       redirectUrl = product.deepLink; // Android
