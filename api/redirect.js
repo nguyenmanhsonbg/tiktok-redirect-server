@@ -31,7 +31,8 @@ module.exports = async (req, res) => {
 
     // Redirect based on User-Agent
     if (/iPhone/i.test(userAgent)) {
-      redirectUrl = product.deepLink; // iOS
+      //redirectUrl = product.deepLink; // iOS
+      redirectUrl = "https://shopee.vn/product/1024077830/17397941748"; // iOS
     } else if (/Android/i.test(userAgent)) {
       redirectUrl = product.deepLink; // Android
     } else {
