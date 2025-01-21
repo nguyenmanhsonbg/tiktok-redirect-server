@@ -60,18 +60,18 @@ module.exports = async (req, res) => {
     if (/FBAN|FBAV/i.test(userAgent)) {
       // User is on Facebook app
       if (/iPhone/i.test(userAgent)) {
-        redirectUrl = `${product.deepLink}?source=facebook-iphone`;
+        redirectUrl = product.deepLink;
       } else if (/Android/i.test(userAgent)) {
-        redirectUrl = `${product.deepLink}?source=facebook-android`;
+        redirectUrl = product.deepLink;
       } else {
         redirectUrl = `${product.webLink}?source=facebook-other`;
       }
     } else if (/iPhone/i.test(userAgent)) {
       // Handle iPhone users
-      redirectUrl = `${product.deepLink}?source=iphone`;
+      redirectUrl = product.deepLink;
     } else if (/Android/i.test(userAgent)) {
       // Handle Android users
-      redirectUrl = `${product.deepLink}?source=android`;
+      redirectUrl = product.deepLink;
     } else {
       // Default to desktop users
       redirectUrl = `${product.webLink}?source=desktop`;
