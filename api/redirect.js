@@ -34,29 +34,30 @@ module.exports = async (req, res) => {
     const userAgent = req.headers["user-agent"];
     console.log("User-Agent:", userAgent); // Log User-Agent for debugging
 
-    // Check if the request is from Facebook crawler
-    if (/facebookexternalhit/i.test(userAgent)) {
-      // Serve Open Graph metadata for Facebook crawler
-      return res.send(`
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta property="og:title" content="Olio" />
-            <meta property="og:description" content="Super product" />
-            <meta property="og:type" content="product" />
-            <meta property="product:price:amount" content="20000" />
-            <meta property="product:price:currency" content="VND" />
-            <meta property="product:availability" content="in stock" />
-          </head>
-          <body>
-            <p>This content is specifically for Facebook's crawler.</p>
-          </body>
-        </html>
-      `);
-    }
-
     // Handle other User-Agents (redirect logic)
     let redirectUrl;
+
+    // Check if the request is from Facebook crawler
+    // if (/facebookexternalhit/i.test(userAgent)) {
+    //   // Serve Open Graph metadata for Facebook crawler
+    //   return res.send(`
+    //         <!DOCTYPE html>
+    //         <html>
+    //           <head>
+    //             <meta property="og:title" content="Olio" />
+    //             <meta property="og:description" content="Super product" />
+    //             <meta property="og:type" content="product" />
+    //             <meta property="product:price:amount" content="20000" />
+    //             <meta property="product:price:currency" content="VND" />
+    //             <meta property="product:availability" content="in stock" />
+    //           </head>
+    //           <body>
+    //             <p>This content is specifically for Facebook's crawler.</p>
+    //           </body>
+    //         </html>
+    //       `);
+    // }
+
     if (/FBAN|FBAV/i.test(userAgent)) {
       // Facebook app
       redirectUrl = product.deepLink;
