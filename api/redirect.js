@@ -34,36 +34,46 @@ module.exports = async (req, res) => {
     const userAgent = req.headers["user-agent"];
     console.log("User-Agent:", userAgent); // Log User-Agent for debugging
 
-    let redirectUrl;
-
-    // Redirect logic for Facebook crawler
+    // Check if the request is from Facebook crawler
     if (/facebookexternalhit/i.test(userAgent)) {
-      redirectUrl = product.webLink;
+      // Serve Open Graph metadata for Facebook crawler
+      return res.send(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta property="og:title" content="${product.name}" />
+            <meta property="og:description" content="${product.description}" />
+            <meta property="og:image" content="${product.imageUrl}" />
+            <meta property="og:url" content="${product.deepLink}" />
+            <meta property="og:type" content="product" />
+          </head>
+          <body>
+            <p>This content is specifically for Facebook's crawler.</p>
+          </body>
+        </html>
+      `);
     }
-    // Redirect logic for Facebook app
-    else if (/FBAN|FBAV/i.test(userAgent)) {
-      // redirectUrl = product.deepLink;
-      redirectUrl = "shopee://product/37251933/591989399";
-    }
-    // Redirect logic for iPhone users
-    else if (/iPhone/i.test(userAgent)) {
-      redirectUrl = "shopee://product/37251933/591989399";
-      //redirectUrl = product.deepLink;
-    }
-    // Redirect logic for Android users
-    else if (/Android/i.test(userAgent)) {
-      redirectUrl = "shopee://product/37251933/591989399";
-      //redirectUrl = product.deepLink;
-    }
-    // Redirect logic for desktop and other users
-    else {
+
+    // Handle other User-Agents (redirect logic)
+    let redirectUrl;
+    if (/FBAN|FBAV/i.test(userAgent)) {
+      // Facebook app
+      redirectUrl = product.deepLink;
+    } else if (/iPhone/i.test(userAgent)) {
+      // iPhone users
+      redirectUrl = product.deepLink;
+    } else if (/Android/i.test(userAgent)) {
+      // Android users
+      redirectUrl = product.deepLink;
+    } else {
+      // Desktop/Other users
       redirectUrl = product.webLink;
     }
 
     console.log("Constructed Redirect URL:", redirectUrl); // Log the constructed URL
     return res.redirect(redirectUrl);
   } catch (error) {
-    console.error("Error handling redirect:", error);
+    console.error("Error handling request:", error);
     return res.status(500).json({ error: "Internal server error." });
   } finally {
     // Ensure the MongoDB client is closed
