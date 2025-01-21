@@ -34,46 +34,26 @@ module.exports = async (req, res) => {
     const userAgent = req.headers["user-agent"];
     console.log("User-Agent:", userAgent); // Log User-Agent for debugging
 
-    // Detect Facebook crawler
-
     let redirectUrl;
+
+    // Redirect logic for Facebook crawler
     if (/facebookexternalhit/i.test(userAgent)) {
-      // Respond with Open Graph metadata for Facebook crawler
-      // return res.send(`
-      //   <!DOCTYPE html>
-      //   <html>
-      //     <head>
-      //       <meta property="og:title" content="${product.name}" />
-      //       <meta property="og:description" content="${product.description}" />
-      //       <meta property="og:image" content="${product.imageUrl}" />
-      //       <meta property="og:url" content="${product.webLink}" />
-      //       <meta property="og:type" content="product" />
-      //     </head>
-      //     <body>
-      //       <p>Facebook crawler should not see this content.</p>
-      //     </body>
-      //   </html>
-      // `);
       redirectUrl = product.deepLink;
     }
-    // Redirect logic for other User-Agents
-    if (/FBAN|FBAV/i.test(userAgent)) {
-      // User is on Facebook app
-      if (/iPhone/i.test(userAgent)) {
-        redirectUrl = product.deepLink;
-      } else if (/Android/i.test(userAgent)) {
-        redirectUrl = product.deepLink;
-      } else {
-        redirectUrl = `${product.webLink}?source=facebook-other`;
-      }
-    } else if (/iPhone/i.test(userAgent)) {
-      // Handle iPhone users
+    // Redirect logic for Facebook app
+    else if (/FBAN|FBAV/i.test(userAgent)) {
       redirectUrl = product.deepLink;
-    } else if (/Android/i.test(userAgent)) {
-      // Handle Android users
+    }
+    // Redirect logic for iPhone users
+    else if (/iPhone/i.test(userAgent)) {
       redirectUrl = product.deepLink;
-    } else {
-      // Default to desktop users
+    }
+    // Redirect logic for Android users
+    else if (/Android/i.test(userAgent)) {
+      redirectUrl = product.deepLink;
+    }
+    // Redirect logic for desktop and other users
+    else {
       redirectUrl = `${product.webLink}?source=desktop`;
     }
 
