@@ -42,19 +42,22 @@ module.exports = async (req, res) => {
     }
     // Redirect logic for Facebook app
     else if (/FBAN|FBAV/i.test(userAgent)) {
-      redirectUrl = product.deepLink;
+      // redirectUrl = product.deepLink;
+      redirectUrl = "shopee://product/37251933/591989399";
     }
     // Redirect logic for iPhone users
     else if (/iPhone/i.test(userAgent)) {
-      redirectUrl = product.deepLink;
+      redirectUrl = "shopee://product/37251933/591989399";
+      //redirectUrl = product.deepLink;
     }
     // Redirect logic for Android users
     else if (/Android/i.test(userAgent)) {
-      redirectUrl = product.deepLink;
+      redirectUrl = "shopee://product/37251933/591989399";
+      //redirectUrl = product.deepLink;
     }
     // Redirect logic for desktop and other users
     else {
-      redirectUrl = `${product.webLink}?source=desktop`;
+      redirectUrl = product.webLink;
     }
 
     console.log("Constructed Redirect URL:", redirectUrl); // Log the constructed URL
