@@ -1,20 +1,24 @@
 const { MongoClient } = require("mongodb");
 
-const uri = "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri =
+  "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const client = new MongoClient(uri);
 
 module.exports = async (req, res) => {
+  // Allow only GET requests
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   const { code } = req.query;
 
+  // Validate short code
   if (!code) {
     return res.status(400).json({ error: "Short code is required." });
   }
 
   try {
+    // Connect to MongoDB
     await client.connect();
     const db = client.db("productDatabase");
     const productsCollection = db.collection("products");
@@ -22,6 +26,7 @@ module.exports = async (req, res) => {
     // Find the product by shortCode
     const product = await productsCollection.findOne({ shortCode: code });
 
+    // Handle product not found
     if (!product) {
       return res.status(404).json({ error: "Product not found." });
     }
@@ -29,12 +34,30 @@ module.exports = async (req, res) => {
     const userAgent = req.headers["user-agent"];
     console.log("User-Agent:", userAgent); // Log User-Agent for debugging
 
+    // Detect Facebook crawler
+    if (/facebookexternalhit/i.test(userAgent)) {
+      // Respond with Open Graph metadata for Facebook crawler
+      return res.send(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta property="og:title" content="${product.name}" />
+            <meta property="og:description" content="${product.description}" />
+            <meta property="og:image" content="${product.imageUrl}" />
+            <meta property="og:url" content="${product.webLink}" />
+            <meta property="og:type" content="product" />
+          </head>
+          <body>
+            <p>Facebook crawler should not see this content.</p>
+          </body>
+        </html>
+      `);
+    }
+
     let redirectUrl;
 
-    // Detect Facebook crawler User-Agent
-    if (/facebookexternalhit/i.test(userAgent)) {
-      redirectUrl = "https://www.google.com"; // Redirect to Google for Facebook crawler
-    } else if (/FBAN|FBAV/i.test(userAgent)) {
+    // Redirect logic for other User-Agents
+    if (/FBAN|FBAV/i.test(userAgent)) {
       // User is on Facebook app
       if (/iPhone/i.test(userAgent)) {
         redirectUrl = `${product.deepLink}?source=facebook-iphone`;
@@ -44,19 +67,23 @@ module.exports = async (req, res) => {
         redirectUrl = `${product.webLink}?source=facebook-other`;
       }
     } else if (/iPhone/i.test(userAgent)) {
+      // Handle iPhone users
       redirectUrl = `${product.deepLink}?source=iphone`;
     } else if (/Android/i.test(userAgent)) {
+      // Handle Android users
       redirectUrl = `${product.deepLink}?source=android`;
     } else {
+      // Default to desktop users
       redirectUrl = `${product.webLink}?source=desktop`;
     }
 
-    console.log("Constructed Redirect URL:", redirectUrl); // Log the Redirect URL for debugging
-    res.redirect(redirectUrl);
+    console.log("Constructed Redirect URL:", redirectUrl); // Log the constructed URL
+    return res.redirect(redirectUrl);
   } catch (error) {
     console.error("Error handling redirect:", error);
-    res.status(500).json({ error: "Failed to handle redirect." });
+    return res.status(500).json({ error: "Internal server error." });
   } finally {
+    // Ensure the MongoDB client is closed
     await client.close();
   }
 };
