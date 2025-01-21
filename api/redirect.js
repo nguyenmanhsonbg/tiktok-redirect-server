@@ -43,8 +43,6 @@ module.exports = async (req, res) => {
           <head>
             <meta property="og:title" content="${product.name}" />
             <meta property="og:description" content="${product.description}" />
-            <meta property="og:image" content="${product.imageUrl}" />
-            <meta property="og:url" content="${product.deepLink}" />
             <meta property="og:type" content="product" />
           </head>
           <body>
