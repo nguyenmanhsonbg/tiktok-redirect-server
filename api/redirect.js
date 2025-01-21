@@ -41,9 +41,12 @@ module.exports = async (req, res) => {
         <!DOCTYPE html>
         <html>
           <head>
-            <meta property="og:title" content="${product.name}" />
-            <meta property="og:description" content="${product.description}" />
+            <meta property="og:title" content="Olio" />
+            <meta property="og:description" content="Super product" />
             <meta property="og:type" content="product" />
+            <meta property="product:price:amount" content="20000" />
+            <meta property="product:price:currency" content="VND" />
+            <meta property="product:availability" content="in stock" />
           </head>
           <body>
             <p>This content is specifically for Facebook's crawler.</p>
