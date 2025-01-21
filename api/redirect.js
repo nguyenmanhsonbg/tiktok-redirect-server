@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
 
     // Redirect logic for Facebook crawler
     if (/facebookexternalhit/i.test(userAgent)) {
-      redirectUrl = product.deepLink;
+      redirectUrl = product.webLink;
     }
     // Redirect logic for Facebook app
     else if (/FBAN|FBAV/i.test(userAgent)) {
