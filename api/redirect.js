@@ -66,16 +66,16 @@ module.exports = async (req, res) => {
 
     if (/FBAN|FBAV/i.test(userAgent)) {
       // Facebook app
-      redirectUrl = product.webLink;
+      redirectUrl = product.webLink2;
     } else if (/iPhone/i.test(userAgent)) {
       // iPhone users
-      redirectUrl = product.webLink;
+      redirectUrl = product.webLink2;
     } else if (/Android/i.test(userAgent)) {
       // Android users
-      redirectUrl = product.webLink;
+      redirectUrl = product.webLink2;
     } else {
       // Desktop/Other users
-      redirectUrl = product.webLink;
+      redirectUrl = product.webLink1;
     }
 
     console.log("Constructed Redirect URL:", redirectUrl); // Log the constructed URL
