@@ -37,26 +37,32 @@ module.exports = async (req, res) => {
     // Handle other User-Agents (redirect logic)
     let redirectUrl;
 
-    // Check if the request is from Facebook crawler
-    // if (/facebookexternalhit/i.test(userAgent)) {
-    //   // Serve Open Graph metadata for Facebook crawler
-    //   return res.send(`
-    //         <!DOCTYPE html>
-    //         <html>
-    //           <head>
-    //             <meta property="og:title" content="Olio" />
-    //             <meta property="og:description" content="Super product" />
-    //             <meta property="og:type" content="product" />
-    //             <meta property="product:price:amount" content="20000" />
-    //             <meta property="product:price:currency" content="VND" />
-    //             <meta property="product:availability" content="in stock" />
-    //           </head>
-    //           <body>
-    //             <p>This content is specifically for Facebook's crawler.</p>
-    //           </body>
-    //         </html>
-    //       `);
-    // }
+    //Check if the request is from Facebook crawler
+    if (/facebookexternalhit/i.test(userAgent)) {
+      // Serve Open Graph metadata for Shopee's homepage
+      return res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <meta property="og:title" content="Shopee - Your Online Shopping Platform" />
+            <meta property="og:description" content="Shop for the best deals, discounts, and promotions on your favorite products. Discover millions of items across various categories on Shopee!" />
+            <meta property="og:type" content="website" />
+            <meta property="og:image" content="public/images/logo.png" />
+            <meta property="og:url" content="https://shopee.vn/" />
+            <meta property="og:site_name" content="Shopee" />
+            <meta property="og:locale" content="vi_VN" />
+            <title>Shopee - Your Online Shopping Platform</title>
+          </head>
+          <body>
+            <h1>Welcome to Shopee</h1>
+            <p>Discover millions of items and shop for the best deals on Shopee!</p>
+            <img src="public/images/logo.pn" alt="Shopee Logo" />
+          </body>
+        </html>
+      `);
+    }
 
     if (/FBAN|FBAV/i.test(userAgent)) {
       // Facebook app
