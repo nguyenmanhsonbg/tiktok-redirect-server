@@ -35,9 +35,9 @@ module.exports = async (req, res) => {
     // const deepLink = `shopee://product/${shopId}/${productId}`;
 
     // // Function to generate a random short code
-    // const generateShortCode = () => {
-    //   return crypto.randomBytes(4).toString("hex"); // Generates an 8-character random string
-    // };
+    const generateShortCode = () => {
+      return crypto.randomBytes(4).toString("hex"); 
+    };
 
     await client.connect();
     const db = client.db("productDatabase");
