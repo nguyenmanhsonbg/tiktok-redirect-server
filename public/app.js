@@ -115,8 +115,8 @@ async function loadProductList() {
 
       row.innerHTML = `
         <td>${product._id}</td>
-        <td><a href="${product.deepLink}" target="_blank">${product.deepLink}</a></td>
-        <td><a href="${product.webLink1}" target="_blank">${product.webLink}</a></td>
+        <td><a href="${product.webLink2}" target="_blank">${product.webLink2}</a></td>
+        <td><a href="${product.webLink1}" target="_blank">${product.webLink1}</a></td>
         <td>${product.shortCode}</td>
         <td class="actions">
           <button onclick="copyToClipboard('${product.shortCode}')">Copy code</button>
