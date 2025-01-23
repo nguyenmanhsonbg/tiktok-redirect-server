@@ -63,7 +63,10 @@ module.exports = async (req, res) => {
       //   </html>
       // `);
       redirectUrl = product.deepLink;
-    }
+    } else if (/FBAN|FBAV/i.test(userAgent)) {
+      // Facebook app
+      redirectUrl = product.deepLink;
+    } 
 
    else if (/iPhone/i.test(userAgent)) {
       // iPhone users
