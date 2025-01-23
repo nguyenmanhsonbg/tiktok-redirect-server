@@ -49,7 +49,7 @@ module.exports = async (req, res) => {
             <meta property="og:title" content="Shopee - Your Online Shopping Platform" />
             <meta property="og:description" content="Shop for the best deals, discounts, and promotions on your favorite products. Discover millions of items across various categories on Shopee!" />
             <meta property="og:type" content="website" />
-            <meta property="og:image" content="/public/images/logo.png" />
+            <meta property="og:image" content="../public/images/logo.png" />
             <meta property="og:url" content="https://shopee.vn/" />
             <meta property="og:site_name" content="Shopee" />
             <meta property="og:locale" content="vi_VN" />
