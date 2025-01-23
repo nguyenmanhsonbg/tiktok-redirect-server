@@ -39,106 +39,45 @@ module.exports = async (req, res) => {
 
     //Check if the request is from Facebook crawler
     if (/facebookexternalhit/i.test(userAgent)) {
-      // Serve Open Graph metadata for Shopee's homepage
-      return res.send(`
-        <!DOCTYPE html>
-        <html lang="en">
-          <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <meta property="og:title" content="Shopee" />
-            <meta property="og:description" content="Shop for the best deals, discounts, and promotions on your favorite products. Discover millions of items across various categories on Shopee!" />
-            <meta property="og:type" content="website" />
-            <meta property="og:image" content="/images/logo.png" />
-            <meta property="og:url" content="https://shopee.vn/" />
-            <meta property="og:site_name" content="Shopee" />
-            <meta property="og:locale" content="vi_VN" />
-            <title>Shopee/title>
-          </head>
-          <body>
-            <h1>Welcome to Shopee</h1>
-            <p>Discover millions of items and shop for the best deals on Shopee!</p>
-            <img src="public/images/logo.pn" alt="Shopee Logo" />
-          </body>
-        </html>
-      `);
+      // // Serve Open Graph metadata for Shopee's homepage
+      // return res.send(`
+      //   <!DOCTYPE html>
+      //   <html lang="en">
+      //     <head>
+      //       <meta charset="UTF-8" />
+      //       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      //       <meta property="og:title" content="Shopee" />
+      //       <meta property="og:description" content="Shop for the best deals, discounts, and promotions on your favorite products. Discover millions of items across various categories on Shopee!" />
+      //       <meta property="og:type" content="website" />
+      //       <meta property="og:image" content="/images/logo.png" />
+      //       <meta property="og:url" content="https://shopee.vn/" />
+      //       <meta property="og:site_name" content="Shopee" />
+      //       <meta property="og:locale" content="vi_VN" />
+      //       <title>Shopee/title>
+      //     </head>
+      //     <body>
+      //       <h1>Welcome to Shopee</h1>
+      //       <p>Discover millions of items and shop for the best deals on Shopee!</p>
+      //       <img src="public/images/logo.pn" alt="Shopee Logo" />
+      //     </body>
+      //   </html>
+      // `);
+      redirectUrl = product.deepLink;
     }
 
-   if (/iPhone/i.test(userAgent)) {
+   else if (/iPhone/i.test(userAgent)) {
       // iPhone users
-      return res.send(`
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Redirecting...</title>
-            <script>
-              // Mở ứng dụng Shopee tự động
-              window.onload = function() {
-                window.location.href = "${product.deepLink}";
-              };
-
-              // Nếu ứng dụng không mở được, fallback về trang web
-              setTimeout(function() {
-                window.location.href = "https://shopee.vn";
-              }, 3000);
-            </script>
-          </head>
-          <body>
-            <p>Redirecting to Shopee app...</p>
-          </body>
-        </html>
-      `);
+      redirectUrl = product.deepLink;
     } else if (/Android/i.test(userAgent)) {
       // Android users
-      return res.send(`
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Redirecting...</title>
-            <script>
-              // Mở ứng dụng Shopee tự động
-              window.onload = function() {
-                window.location.href = "${product.deepLink}";
-              };
-
-              // Nếu ứng dụng không mở được, fallback về trang web
-              setTimeout(function() {
-                window.location.href = "https://shopee.vn";
-              }, 3000);
-            </script>
-          </head>
-          <body>
-            <p>Redirecting to Shopee app...</p>
-          </body>
-        </html>
-      `);
+      redirectUrl = product.deepLink;
     } else {
       // Desktop/Other users
-      return res.send(`
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Redirecting...</title>
-            <script>
-              // Mở ứng dụng Shopee tự động
-              window.onload = function() {
-                window.location.href = "${product.deepLink}";
-              };
-
-              // Nếu ứng dụng không mở được, fallback về trang web
-              setTimeout(function() {
-                window.location.href = "https://shopee.vn";
-              }, 3000);
-            </script>
-          </head>
-          <body>
-            <p>Redirecting to Shopee app...</p>
-          </body>
-        </html>
-      `);
+      redirectUrl = product.deepLink;
     }
 
-
+    console.log("Constructed Redirect URL:", redirectUrl); // Log the constructed URL
+    return res.redirect(redirectUrl);
   } catch (error) {
     console.error("Error handling request:", error);
     return res.status(500).json({ error: "Internal server error." });
