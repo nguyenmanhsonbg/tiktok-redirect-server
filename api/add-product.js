@@ -16,23 +16,23 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Resolve the shortened link (webLink2) to its final redirect URL
-    // const response = await axios.get(webLink2, { maxRedirects: 5 });
-    // const resolvedLink = response.request.res.responseUrl;
+   // Resolve the shortened link (webLink2) to its final redirect URL
+    const response = await axios.get(webLink2, { maxRedirects: 5 });
+    const resolvedLink = response.request.res.responseUrl;
 
-    // // Extract shopId and productId from the resolved link
-    // const match = resolvedLink.match(/\/product\/(\d+)\/(\d+)/);
-    // if (!match) {
-    //   return res.status(400).json({
-    //     error: "Invalid resolved link format. Ensure it follows the format 'https://shopee.vn/product/<shopId>/<productId>'.",
-    //   });
-    // }
+    // Extract shopId and productId from the resolved link
+    const match = resolvedLink.match(/\/product\/(\d+)\/(\d+)/);
+    if (!match) {
+      return res.status(400).json({
+        error: "Invalid resolved link format. Ensure it follows the format 'https://shopee.vn/product/<shopId>/<productId>'.",
+      });
+    }
 
-    // const shopId = match[1];
-    // const productId = match[2];
+    const shopId = match[1];
+    const productId = match[2];
 
-    // // Generate the deep link
-    // const deepLink = `shopee://product/${shopId}/${productId}`;
+    // Generate the deep link
+    const deepLink = `shopee://product/${shopId}/${productId}`;
 
     // // Function to generate a random short code
     const generateShortCode = () => {
@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
     }
 
     // Create a new product entry
-    const newProduct = { shortCode, webLink1, webLink2};
+    const newProduct = { shortCode, webLink1, deepLink};
 
     // Insert the new product into MongoDB
     const result = await productsCollection.insertOne(newProduct);

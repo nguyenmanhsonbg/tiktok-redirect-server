@@ -66,13 +66,13 @@ module.exports = async (req, res) => {
 
     if (/FBAN|FBAV/i.test(userAgent)) {
       // Facebook app
-      redirectUrl = product.webLink2;
+      redirectUrl = product.deepLink;
     } else if (/iPhone/i.test(userAgent)) {
       // iPhone users
-      redirectUrl = product.webLink2;
+      redirectUrl = product.deepLink;
     } else if (/Android/i.test(userAgent)) {
       // Android users
-      redirectUrl = product.webLink2;
+      redirectUrl = product.deepLink;
     } else {
       // Desktop/Other users
       redirectUrl = product.webLink1;
