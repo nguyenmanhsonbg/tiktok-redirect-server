@@ -64,10 +64,7 @@ module.exports = async (req, res) => {
       `);
     }
 
-    if (/FBAN|FBAV/i.test(userAgent)) {
-      // Facebook app
-      redirectUrl = product.deepLink;
-    } else if (/iPhone/i.test(userAgent)) {
+   if (/iPhone/i.test(userAgent)) {
       // iPhone users
       redirectUrl = product.deepLink;
     } else if (/Android/i.test(userAgent)) {
@@ -75,7 +72,7 @@ module.exports = async (req, res) => {
       redirectUrl = product.deepLink;
     } else {
       // Desktop/Other users
-      redirectUrl = product.webLink1;
+      redirectUrl = product.deepLink;
     }
 
     console.log("Constructed Redirect URL:", redirectUrl); // Log the constructed URL
