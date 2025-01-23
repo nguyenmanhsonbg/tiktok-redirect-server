@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
     }
 
     // Create a new product entry
-    const newProduct = { shortCode, webLink1, deepLink};
+    const newProduct = { shortCode, deepLink, webLink1};
 
     // Insert the new product into MongoDB
     const result = await productsCollection.insertOne(newProduct);
