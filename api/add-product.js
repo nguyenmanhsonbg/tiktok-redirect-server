@@ -1,6 +1,6 @@
 const { MongoClient } = require("mongodb");
 const crypto = require("crypto");
-const axios = require("axios"); // For resolving the shortened link
+const axios = require("axios");
 
 const uri = "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Use environment variable for MongoDB connection
 const client = new MongoClient(uri);
