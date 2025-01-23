@@ -66,17 +66,79 @@ module.exports = async (req, res) => {
 
    if (/iPhone/i.test(userAgent)) {
       // iPhone users
-      redirectUrl = product.deepLink;
+      return res.send(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Redirecting...</title>
+            <script>
+              // Mở ứng dụng Shopee tự động
+              window.onload = function() {
+                window.location.href = "${product.deepLink}";
+              };
+
+              // Nếu ứng dụng không mở được, fallback về trang web
+              setTimeout(function() {
+                window.location.href = "https://shopee.vn";
+              }, 3000);
+            </script>
+          </head>
+          <body>
+            <p>Redirecting to Shopee app...</p>
+          </body>
+        </html>
+      `);
     } else if (/Android/i.test(userAgent)) {
       // Android users
-      redirectUrl = product.deepLink;
+      return res.send(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Redirecting...</title>
+            <script>
+              // Mở ứng dụng Shopee tự động
+              window.onload = function() {
+                window.location.href = "${product.deepLink}";
+              };
+
+              // Nếu ứng dụng không mở được, fallback về trang web
+              setTimeout(function() {
+                window.location.href = "https://shopee.vn";
+              }, 3000);
+            </script>
+          </head>
+          <body>
+            <p>Redirecting to Shopee app...</p>
+          </body>
+        </html>
+      `);
     } else {
       // Desktop/Other users
-      redirectUrl = product.deepLink;
+      return res.send(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Redirecting...</title>
+            <script>
+              // Mở ứng dụng Shopee tự động
+              window.onload = function() {
+                window.location.href = "${product.deepLink}";
+              };
+
+              // Nếu ứng dụng không mở được, fallback về trang web
+              setTimeout(function() {
+                window.location.href = "https://shopee.vn";
+              }, 3000);
+            </script>
+          </head>
+          <body>
+            <p>Redirecting to Shopee app...</p>
+          </body>
+        </html>
+      `);
     }
 
-    console.log("Constructed Redirect URL:", redirectUrl); // Log the constructed URL
-    return res.redirect(redirectUrl);
+
   } catch (error) {
     console.error("Error handling request:", error);
     return res.status(500).json({ error: "Internal server error." });
