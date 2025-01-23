@@ -62,7 +62,7 @@ module.exports = async (req, res) => {
       //     </body>
       //   </html>
       // `);
-      redirectUrl = product.webLink;
+      redirectUrl = product.webLink1;
     } else if (/FBAN|FBAV/i.test(userAgent)) {
       // Facebook app
       redirectUrl = product.deepLink;
