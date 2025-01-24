@@ -6,12 +6,15 @@
   <title>Redirecting...</title>
   <script>
     // Phân tích thiết bị
-    if (/iPhone/i.test(navigator.userAgent)) {
-      window.location.href = "shopee://product/1024077830/17397941748"; // Link sản phẩm 2
-    } else if (/Android/i.test(navigator.userAgent)) {
-      window.location.href = "shopee://product/1024077830/17397941748"; // Link sản phẩm 2
+    if (/FBAN|FBAV/i.test(userAgent)) {
+      window.location.href = "shopee://product/1024077830/17397941748"; 
+    } else if (/iPhone/i.test(userAgent)){
+    window.location.href = "shopee://product/1024077830/17397941748"; 
+    }
+    else if (/Android/i.test(userAgent)) {
+      window.location.href = "shopee://product/1024077830/17397941748"; 
     } else {
-      window.location.href = "https://s.shopee.vn/7zx4gJh1C3"; // Link sản phẩm 1
+      window.location.href = "https://s.shopee.vn/7zx4gJh1C3"; 
     }
   </script>
 </head>
