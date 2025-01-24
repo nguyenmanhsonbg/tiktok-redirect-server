@@ -3,20 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Redirecting link...</title>
+  <title>Redirecting...</title>
   <script>
     // Phân tích thiết bị
-    if (/iPhone/i.test(userAgent)){
-      window.location.href = "https://s.shopee.vn/7zx4gJh1C3"; 
+    if (/FBAN|FBAV/i.test(navigator.userAgent)) {
+      window.location.href = "shopee://product/1024077830/17397941748"; 
+    } else if (/iPhone/i.test(navigator.userAgent)){
+    window.location.href = "shopee://product/1024077830/17397941748"; 
     }
-    else if (/Android/i.test(userAgent)) {
-      window.location.href = "https://s.shopee.vn/7zx4gJh1C3"; 
+    else if (/Android/i.test(navigator.userAgent)) {
+      window.location.href = "shopee://product/1024077830/17397941748"; 
     } else {
       window.location.href = "https://s.shopee.vn/7zx4gJh1C3"; 
     }
   </script>
 </head>
 <body>
-  <p>Redirecting link...</p>
+  <p>Redirecting...</p>
 </body>
 </html>
