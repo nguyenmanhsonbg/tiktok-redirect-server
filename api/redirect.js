@@ -45,7 +45,7 @@ module.exports = async (req, res) => {
     
     } else {
       // Desktop/Other users
-      respLink = product.deepLink;
+      respLink = product.webLink;
     }
 
     return res.redirect(respLink);
