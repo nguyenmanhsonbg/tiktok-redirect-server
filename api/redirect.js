@@ -29,28 +29,26 @@ module.exports = async (req, res) => {
     }
 
     const userAgent = req.headers["user-agent"];
-    console.log("User-Agent:", userAgent);
+    let respLink;
+   
 
     if (/facebookexternalhit/i.test(userAgent)) {
-
-      return res.redirect("https://tiktok-redirect-server.vercel.app/redirect.html");
+      respLink = product.webLink;
     
     } else if (/iPhone/i.test(userAgent)) {
       // iPhone users
-      // return res.redirect(product.webLink2);
-      return res.redirect("https://tiktok-redirect-server.vercel.app/redirect.html");
+      respLink = product.deepLink;
     
     } else if (/Android/i.test(userAgent)) {
       // Android users
-      // return res.redirect(product.webLink2);
-      return res.redirect("https://tiktok-redirect-server.vercel.app/redirect.html");
+      respLink = product.deepLink;
     
     } else {
       // Desktop/Other users
-      // return res.redirect(product.webLink2);
-      return res.redirect("https://tiktok-redirect-server.vercel.app/redirect.html");
-    
+      respLink = product.deepLink;
     }
+
+    return res.redirect(respLink);
   } catch (error) {
     console.error("Error handling request:", error);
     return res.status(500).json({ error: "Internal server error." });
