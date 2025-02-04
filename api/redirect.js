@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
     }
 
     const userAgent = req.headers["user-agent"];
-    let respLink;
+    let respLink = product.webLink;
    
 
     if (/facebookexternalhit/i.test(userAgent)) {
