@@ -34,7 +34,8 @@ module.exports = async (req, res) => {
    
 
     if (/facebookexternalhit/i.test(userAgent)) {
-      respLink = product.webLink1;
+      respLink = product.webLink1 + "?cache_buster=" + Date.now();
+      ;
     
     } else if (/iPhone/i.test(userAgent)) {
       // iPhone users
@@ -46,7 +47,7 @@ module.exports = async (req, res) => {
     
     } else {
       // Desktop/Other users
-      respLink = product.webLink1;
+      respLink = product.webLink1 + "?cache_buster=" + Date.now();
     }
 
     console.log(respLink);
