@@ -27,13 +27,14 @@ module.exports = async (req, res) => {
     if (!product) {
       return res.status(404).json({ error: "Product not found." });
     }
+    console.log(product);
 
     const userAgent = req.headers["user-agent"];
     let respLink = product.webLink;
    
 
     if (/facebookexternalhit/i.test(userAgent)) {
-      respLink = product.webLink;
+      respLink = product.webLink1;
     
     } else if (/iPhone/i.test(userAgent)) {
       // iPhone users
@@ -45,10 +46,12 @@ module.exports = async (req, res) => {
     
     } else {
       // Desktop/Other users
-      respLink = product.webLink;
+      respLink = product.webLink1;
     }
 
-    return res.redirect(respLink);
+    console.log(respLink);
+
+    return res.redirect(302, respLink); // Use 302 for temporary redirection
   } catch (error) {
     console.error("Error handling request:", error);
     return res.status(500).json({ error: "Internal server error." });
