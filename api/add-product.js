@@ -32,9 +32,9 @@ module.exports = async (req, res) => {
     const productId = match[2];
 
     // Generate the deep link
-    const deepLink = `shopee://product/${shopId}/${productId}`;
+    //const deepLink = `shopee://product/${shopId}/${productId}`;
 
-    //const deepLink = webLink2;
+    const deepLink = webLink2;
 
     // // Function to generate a random short code
     const generateShortCode = () => {
