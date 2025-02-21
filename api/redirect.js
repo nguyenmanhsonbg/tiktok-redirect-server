@@ -47,18 +47,28 @@ module.exports = async (req, res) => {
     //sua rm
     const link2 = "https://s.shopee.vn/5KwLskfPZH";
 
-    // 🛑 **Cách chính: Tạo URL động để Facebook không cache**
-    const randomParam = Math.random().toString(36).substring(7);
-
     if (/facebookexternalhit/i.test(userAgent)) {
-      // 👉 Nếu là Facebook Crawler, thêm tham số ngẫu nhiên
-      return res.redirect(302, `${link1}?fbclid=${randomParam}`);
+      // 👉 Nếu là Facebook Crawler, trả về một trang HTML tùy chỉnh (Không chứa link thực)
+      return res.send(`
+                <html>
+                    <head>
+                        <title>Thông tin sản phẩm</title>
+                        <meta property="og:title" content="Sản phẩm mới nhất của chúng tôi">
+                        <meta property="og:description" content="Khám phá sản phẩm đặc biệt này!">
+                    </head>
+                    <body>
+                        <h1>Thông tin sản phẩm</h1>
+                        <p>Đây là sản phẩm hot nhất của chúng tôi. Nhấn vào đường link để tìm hiểu thêm!</p>
+                    </body>
+                </html>
+            `);
     }
 
-    // Redirect đúng theo thiết bị
-    let redirectUrl = link1; // Mặc định
+    // 👉 Người dùng thực sự (không phải Facebook Crawler)
+    let redirectUrl = link1; // Mặc định: Desktop
     if (/iPhone/i.test(userAgent)) {
       redirectUrl = link2;
+      console.log("Iphone access");
     } else if (/Android/i.test(userAgent)) {
       redirectUrl = link2;
     }
