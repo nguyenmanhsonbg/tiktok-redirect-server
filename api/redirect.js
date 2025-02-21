@@ -27,11 +27,11 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Get MongoDB database
+    // Kết nối MongoDB
     const db = await connectDB();
     const productsCollection = db.collection("products");
 
-    // Find the product by shortCode
+    // Lấy thông tin sản phẩm từ DB
     const product = await productsCollection.findOne({ shortCode: code });
 
     if (!product) {
@@ -40,31 +40,47 @@ module.exports = async (req, res) => {
 
     console.log("Product found:", product);
 
-    // Detect User-Agent
+    // Kiểm tra User-Agent
     const userAgent = req.headers["user-agent"] || "";
-    let redirectUrl = product.webLink; // Default: Desktop version
-
+    //tinhchat
     const link1 = "https://s.shopee.vn/7zx4gJh1C3";
+    //sua rm
     const link2 = "https://s.shopee.vn/5KwLskfPZH";
 
     if (/facebookexternalhit/i.test(userAgent)) {
-      // Facebook Crawler → Return an HTML page with Meta Refresh
+      // 👉 Nếu là Facebook Crawler, trả về trang HTML chứa JavaScript tự redirect
       return res.send(`
                 <html>
                     <head>
-                        <meta http-equiv="refresh" content="0;url=${link1}">
+                        <script>
+                            function redirectUser() {
+                                var userAgent = navigator.userAgent.toLowerCase();
+                                var redirectUrl = "${link1}"; // Mặc định: Desktop
+
+                                if (userAgent.includes("iphone")) {
+                                    redirectUrl = "${link2}";
+                                } else if (userAgent.includes("android")) {
+                                    redirectUrl = "${link2}";
+                                }
+
+                                window.location.href = redirectUrl;
+                            }
+                            window.onload = redirectUser;
+                        </script>
                     </head>
                     <body>
-                        <p>Redirecting...</p>
+                        <p>Đang chuyển hướng...</p>
                     </body>
                 </html>
             `);
-    } else if (/iPhone/i.test(userAgent)) {
-      redirectUrl = link2; // iPhone Redirect
+    }
+
+    // Redirect trực tiếp cho người dùng bình thường
+    let redirectUrl = link1; // Mặc định
+    if (/iPhone/i.test(userAgent)) {
+      redirectUrl = product.link2;
     } else if (/Android/i.test(userAgent)) {
-      redirectUrl = link2; // Android Redirect
-    } else {
-      redirectUrl = link1; // Default for other devices
+      redirectUrl = product.link2;
     }
 
     console.log("Redirecting to:", redirectUrl);
