@@ -43,9 +43,10 @@ module.exports = async (req, res) => {
     // Kiểm tra User-Agent
     const userAgent = req.headers["user-agent"] || "";
     //tinhchat
-    const link1 = "https://s.shopee.vn/7zx4gJh1C3";
+    const link1 = "https://s.shopee.vn/5KwLskfPZH";
     //sua rm
-    const link2 = "https://s.shopee.vn/5KwLskfPZH";
+    const link2 =
+      "https://shopee.vn/universal-link?deep_link=shopee%3A%2F%2Fproduct-detail%3Fid%3D17397941748";
 
     if (/facebookexternalhit/i.test(userAgent)) {
       // 👉 Nếu là Facebook Crawler, trả về một trang HTML tùy chỉnh (Không chứa link thực)
@@ -65,39 +66,10 @@ module.exports = async (req, res) => {
     }
 
     // 👉 Người dùng thực sự (không phải Facebook Crawler)
-    let redirectUrl = link2; // Mặc định: Desktop
+    let redirectUrl = link1; // Mặc định: Desktop
     if (/iPhone/i.test(userAgent)) {
-      // 🔹 **Mở trực tiếp Shopee App bằng Intent**
-      return res.send(`
-          <html>
-              <head>
-                  <script>
-                      function openShopee() {
-                          var shopeeLink = "${link1}";
-                          var fallbackUrl = "${link1}";
-                          var isFacebookApp = navigator.userAgent.includes("FBAN") || navigator.userAgent.includes("FBAV");
-
-                          if (isFacebookApp) {
-                              // Nếu đang trong Facebook/In-App Browser, mở trong Safari để tránh confirm
-                              window.open(shopeeLink, "_blank");
-                          } else {
-                              // Nếu không, thử mở Shopee App trước
-                              window.location.replace(shopeeLink);
-
-                              // Nếu Shopee không mở sau 2 giây, fallback sang web
-                              setTimeout(() => {
-                                  window.location.replace(fallbackUrl);
-                              }, 2000);
-                          }
-                      }
-                      window.onload = openShopee;
-                  </script>
-              </head>
-              <body>
-                  <p>Đang mở Shopee...</p>
-              </body>
-          </html>
-      `);
+      redirectUrl = link2;
+      console.log("Iphone access");
     }
 
     console.log("Redirecting to:", redirectUrl);
