@@ -67,10 +67,37 @@ module.exports = async (req, res) => {
     // 👉 Người dùng thực sự (không phải Facebook Crawler)
     let redirectUrl = link1; // Mặc định: Desktop
     if (/iPhone/i.test(userAgent)) {
-      redirectUrl = link2;
-      console.log("Iphone access");
-    } else if (/Android/i.test(userAgent)) {
-      redirectUrl = link2;
+      // 🔹 **Mở trực tiếp Shopee App bằng Intent**
+      return res.send(`
+          <html>
+              <head>
+                  <script>
+                      function openShopee() {
+                          var shopeeLink = "${link1}";
+                          var fallbackUrl = "${link1}";
+                          var isFacebookApp = navigator.userAgent.includes("FBAN") || navigator.userAgent.includes("FBAV");
+
+                          if (isFacebookApp) {
+                              // Nếu đang trong Facebook/In-App Browser, mở trong Safari để tránh confirm
+                              window.open(shopeeLink, "_blank");
+                          } else {
+                              // Nếu không, thử mở Shopee App trước
+                              window.location.replace(shopeeLink);
+
+                              // Nếu Shopee không mở sau 2 giây, fallback sang web
+                              setTimeout(() => {
+                                  window.location.replace(fallbackUrl);
+                              }, 2000);
+                          }
+                      }
+                      window.onload = openShopee;
+                  </script>
+              </head>
+              <body>
+                  <p>Đang mở Shopee...</p>
+              </body>
+          </html>
+      `);
     }
 
     console.log("Redirecting to:", redirectUrl);
