@@ -2,7 +2,19 @@ const { MongoClient } = require("mongodb");
 
 const uri =
   "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-const client = new MongoClient(uri);
+const client = new MongoClient(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+let db;
+async function connectDB() {
+  if (!db) {
+    await client.connect();
+    db = client.db("productDatabase");
+  }
+  return db;
+}
 
 module.exports = async (req, res) => {
   if (req.method !== "GET") {
@@ -10,15 +22,13 @@ module.exports = async (req, res) => {
   }
 
   const { code } = req.query;
-
   if (!code) {
     return res.status(400).json({ error: "Short code is required." });
   }
 
   try {
-    // Connect to MongoDB
-    await client.connect();
-    const db = client.db("productDatabase");
+    // Get MongoDB database
+    const db = await connectDB();
     const productsCollection = db.collection("products");
 
     // Find the product by shortCode
@@ -27,36 +37,40 @@ module.exports = async (req, res) => {
     if (!product) {
       return res.status(404).json({ error: "Product not found." });
     }
-    console.log(product);
 
-    const userAgent = req.headers["user-agent"];
-    let respLink = product.webLink;
-   
+    console.log("Product found:", product);
+
+    // Detect User-Agent
+    const userAgent = req.headers["user-agent"] || "";
+    let redirectUrl = product.webLink; // Default: Desktop version
+
+    const link1 = "https://s.shopee.vn/7zx4gJh1C3";
+    const link2 = "https://s.shopee.vn/5KwLskfPZH";
 
     if (/facebookexternalhit/i.test(userAgent)) {
-      respLink = product.webLink1 + "?cache_buster=" + Date.now();
-      ;
-    
+      // Facebook Crawler → Return an HTML page with Meta Refresh
+      return res.send(`
+                <html>
+                    <head>
+                        <meta http-equiv="refresh" content="0;url=${link1}">
+                    </head>
+                    <body>
+                        <p>Redirecting...</p>
+                    </body>
+                </html>
+            `);
     } else if (/iPhone/i.test(userAgent)) {
-      // iPhone users
-      respLink = product.deepLink;
-    
+      redirectUrl = product.link2; // iPhone Redirect
     } else if (/Android/i.test(userAgent)) {
-      // Android users
-      respLink = product.deepLink;
-    
+      redirectUrl = product.link2; // Android Redirect
     } else {
-      // Desktop/Other users
-      respLink = product.webLink1 + "?cache_buster=" + Date.now();
+      redirectUrl = product.link1; // Default for other devices
     }
 
-    console.log(respLink);
-
-    return res.redirect(302, respLink); // Use 302 for temporary redirection
+    console.log("Redirecting to:", redirectUrl);
+    return res.redirect(302, redirectUrl);
   } catch (error) {
     console.error("Error handling request:", error);
     return res.status(500).json({ error: "Internal server error." });
-  } finally {
-    await client.close();
   }
 };
