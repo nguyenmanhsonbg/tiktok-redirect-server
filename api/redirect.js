@@ -60,11 +60,11 @@ module.exports = async (req, res) => {
                 </html>
             `);
     } else if (/iPhone/i.test(userAgent)) {
-      redirectUrl = product.link2; // iPhone Redirect
+      redirectUrl = link2; // iPhone Redirect
     } else if (/Android/i.test(userAgent)) {
-      redirectUrl = product.link2; // Android Redirect
+      redirectUrl = link2; // Android Redirect
     } else {
-      redirectUrl = product.link1; // Default for other devices
+      redirectUrl = link1; // Default for other devices
     }
 
     console.log("Redirecting to:", redirectUrl);
