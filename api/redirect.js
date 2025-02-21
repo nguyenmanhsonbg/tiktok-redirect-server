@@ -65,7 +65,7 @@ module.exports = async (req, res) => {
     }
 
     // 👉 Người dùng thực sự (không phải Facebook Crawler)
-    let redirectUrl = link1; // Mặc định: Desktop
+    let redirectUrl = link2; // Mặc định: Desktop
     if (/iPhone/i.test(userAgent)) {
       // 🔹 **Mở trực tiếp Shopee App bằng Intent**
       return res.send(`
