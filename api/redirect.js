@@ -46,7 +46,9 @@ module.exports = async (req, res) => {
     const link1 = "https://s.shopee.vn/5KwLskfPZH";
     //sua rm
     const link2 =
-      "https://shopee.vn/universal-link?deep_link=shopee%3A%2F%2Fproduct-detail%3Fid%3D17397941748";
+      "https://s.shopee.vn/7zx4gJh1C3";
+    const sid = "1024077830"
+    const pid = "17397941748"
 
     if (/facebookexternalhit/i.test(userAgent)) {
       // 👉 Nếu là Facebook Crawler, trả về một trang HTML tùy chỉnh (Không chứa link thực)
@@ -68,9 +70,36 @@ module.exports = async (req, res) => {
     // 👉 Người dùng thực sự (không phải Facebook Crawler)
     let redirectUrl = link1; // Mặc định: Desktop
     if (/iPhone/i.test(userAgent)) {
-      redirectUrl = link2;
-      console.log("Iphone access");
-    }
+      // 👉 Nếu mở từ Facebook/In-App Browser, ép mở Safari trước khi chuyển hướng
+      return res.send(`
+          <html>
+              <head>
+                  <script>
+                      function openShopee() {
+                          var isFacebookApp = navigator.userAgent.includes("FBAN") || navigator.userAgent.includes("FBAV");
+                          var deepLink = "shopee://product/${sid}/${pid}";
+                          var fallbackUrl = "https://shopee.vn/product/${sid}/${pid}";
+
+                          if (isFacebookApp) {
+                              // Nếu trong Facebook/In-App, mở Safari trước để bypass xác nhận
+                              window.location.href = "https://yourdomain.com/redirect?url=" + encodeURIComponent(deepLink);
+                          } else {
+                              // Nếu không, mở Shopee App trực tiếp
+                              window.location.replace(deepLink);
+                              setTimeout(() => {
+                                  window.location.replace(fallbackUrl);
+                              }, 2000);
+                          }
+                      }
+                      window.onload = openShopee;
+                  </script>
+              </head>
+              <body>
+                  <p>Đang mở Shopee...</p>
+              </body>
+          </html>
+      `);
+  }
 
     console.log("Redirecting to:", redirectUrl);
     return res.redirect(302, redirectUrl);
