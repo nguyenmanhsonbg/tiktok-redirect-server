@@ -82,7 +82,7 @@ module.exports = async (req, res) => {
 
                           if (isFacebookApp) {
                               // Nếu trong Facebook/In-App, mở Safari trước để bypass xác nhận
-                              window.location.href = "https://yourdomain.com/redirect?url=" + encodeURIComponent(deepLink);
+                              window.location.href = ${link2}
                           } else {
                               // Nếu không, mở Shopee App trực tiếp
                               window.location.replace(deepLink);
