@@ -68,25 +68,29 @@ module.exports = async (req, res) => {
                         <script>
                             function openInSafari() {
                                 var isFacebookApp = navigator.userAgent.includes("FBAN") || navigator.userAgent.includes("FBAV");
-
+        
                                 if (isFacebookApp) {
-                                    window.open("https://www.google.com.vn/"), "_blank");
+                                    // Open Safari by creating an anchor tag (Better than window.open in some cases)
+                                    var a = document.createElement('a');
+                                    a.href = "https://www.google.com.vn/";
+                                    a.target = "_blank";
+                                    document.body.appendChild(a);
+                                    a.click();
                                 } else {
+                                    // Open Google directly if not inside Facebook/In-App Browser
                                     window.location.replace("https://www.google.com.vn/");
-                                    setTimeout(() => {
-                                        window.location.replace("${fallbackUrl}");
-                                    }, 2000);
                                 }
                             }
                             window.onload = openInSafari;
                         </script>
                     </head>
                     <body>
-                        <p>Đang mở Shopee...</p>
+                        <p>Đang mở Google...</p>
                     </body>
                 </html>
             `);
         }
+        
 
         // ✅ Nếu là Android → Chuyển hướng trực tiếp đến Deep Link Shopee
         // if (/Android/i.test(userAgent)) {
