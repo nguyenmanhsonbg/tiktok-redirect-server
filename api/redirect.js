@@ -45,21 +45,20 @@ module.exports = async (req, res) => {
         const userAgent = req.headers["user-agent"] || "";
 
         // ✅ Nếu là Facebook/In-App Browser → Trả về HTML tĩnh để tránh cache sai link
-        // if (/facebookexternalhit/i.test(userAgent)) {
-        //     return res.send(`
-        //         <html>
-        //             <head>
-        //                 <meta property="og:title" content="Khám phá sản phẩm hot!">
-        //                 <meta property="og:description" content="Mở Shopee ngay để xem sản phẩm này!">
-        //                 <meta property="og:url" content="${fallbackUrl}">
-        //             </head>
-        //             <body>
-        //                 <h1>Thông tin sản phẩm</h1>
-        //                 <p>Bấm vào đường link để xem sản phẩm trên Shopee.</p>
-        //             </body>
-        //         </html>
-        //     `);
-        // }
+        if (/facebookexternalhit/i.test(userAgent)) {
+            return res.send(`
+                <html>
+                    <head>
+                        <meta property="og:title" content="Khám phá sản phẩm hot!">
+                        <meta property="og:description" content="Mở Shopee ngay để xem sản phẩm này!">   
+                    </head>
+                    <body>
+                        <h1>Thông tin sản phẩm</h1>
+                        <p>Bấm vào đường link để xem sản phẩm trên Shopee.</p>
+                    </body>
+                </html>
+            `);
+        }
 
         // ✅ Nếu là iPhone
         if (/iPhone/i.test(userAgent)) {
@@ -97,7 +96,7 @@ module.exports = async (req, res) => {
 
         // ✅ Nếu là Desktop → Mở Shopee Web
         console.log("Redirecting to:", fallbackUrl);
-        return res.redirect(302, fallbackUrl1);
+        return res.redirect(302, fallbackUrl);
     } catch (error) {
         console.error("Error handling request:", error);
         return res.status(500).json({ error: "Internal server error." });
