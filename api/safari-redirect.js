@@ -10,11 +10,23 @@ export default function handler(req, res) {
             <head>
                 <script>
                     function openInSafari() {
-                            var a = document.createElement("a");
-                            a.href = "${decodeURIComponent(url)}";
-                            a.target = "_blank"; // Ép mở ngoài trình duyệt
-                            document.body.appendChild(a);
-                            a.click();
+                        var isFacebookApp = navigator.userAgent.includes("FBAN") || navigator.userAgent.includes("FBAV") || 
+                                            navigator.userAgent.includes("Instagram") || navigator.userAgent.includes("TikTok") ||
+                                            navigator.userAgent.includes("Zalo") || navigator.userAgent.includes("Twitter");
+
+                        if (isFacebookApp) {
+                            // ✅ Sử dụng window.open() với độ trễ để ép mở Safari
+                            setTimeout(function() {
+                                var a = document.createElement("a");
+                                a.href = "${decodeURIComponent(url)}";
+                                a.target = "_blank";
+                                document.body.appendChild(a);
+                                a.click();
+                            }, 100);
+                        } else {
+                            // ✅ Nếu đã ở Safari, mở Shopee ngay
+                            window.location.replace("${decodeURIComponent(url)}");
+                        }
                     }
 
                     window.onload = openInSafari;
