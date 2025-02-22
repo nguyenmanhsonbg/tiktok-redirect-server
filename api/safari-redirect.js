@@ -41,9 +41,6 @@ export default function handler(req, res) {
             // Xử lý nếu JavaScript bị tắt
             window.onload = attemptRedirect;
           </script>
-          <noscript>
-            <meta http-equiv="refresh" content="0;url=${encodedURIComponent(decodedUrl)}">
-          </noscript>
         </head>
         <body>
           <p>Đang chuyển hướng... Nếu không tự động, <a href="${decodedUrl}">nhấn vào đây</a>.</p>
