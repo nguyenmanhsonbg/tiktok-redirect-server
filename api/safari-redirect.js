@@ -14,32 +14,27 @@ export default function handler(req, res) {
     const isIOS = /iphone|ipad|ipod/i.test(userAgent);
     const isInApp = /fban|fbav|instagram|tiktok|zalo|twitter/i.test(userAgent);
   
-    // Tạo HTML động để redirect, tận dụng Universal Links trên iOS
     return res.send(`
       <html>
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <meta name="robots" content="noindex, nofollow"> <!-- Tránh index bởi bot -->
-          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="robots" content="noindex, nofollow">
           <title>Chuyển hướng...</title>
           <script>
-            function attemptRedirect() {
+            function redirect() {
               const userAgent = navigator.userAgent.toLowerCase();
               const isInApp = /fban|fbav|instagram|tiktok|zalo|twitter/i.test(userAgent);
               const isIOS = /iphone|ipad|ipod/i.test(userAgent);
   
               if (isInApp && isIOS) {
-                // Nếu ở trong in-app trên iOS, redirect trực tiếp để tận dụng Universal Links
+                // Tận dụng Universal Links để mở Safari mà không cần popup
                 window.location.replace("${decodedUrl}");
               } else {
-                // Nếu ở ngoài in-app hoặc không phải iOS, redirect ngay
                 window.location.replace("${decodedUrl}");
               }
             }
-  
-            // Xử lý nếu JavaScript bị tắt
-            window.onload = attemptRedirect;
+            window.onload = redirect;
           </script>
         </head>
         <body>
