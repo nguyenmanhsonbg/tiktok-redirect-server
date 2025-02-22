@@ -67,19 +67,22 @@ module.exports = async (req, res) => {
                     <head>
                         <script>
                             function openInSafari() {
-                                var isFacebookApp = navigator.userAgent.includes("FBAN") || navigator.userAgent.includes("FBAV");
-                                var shopeeUniversalLink = "https://shopee.vn/universal-link?deep_link=shopee%3A%2F%2Fproduct%3Fid%3D17397941748";
+                                var isFacebookApp = navigator.userAgent.includes("FBAN") || navigator.userAgent.includes("FBAV") || 
+                                                    navigator.userAgent.includes("Instagram") || navigator.userAgent.includes("TikTok") ||
+                                                    navigator.userAgent.includes("Zalo") || navigator.userAgent.includes("Twitter");
+        
+                                var shopeeUniversalLink = "https://s.shopee.vn/5KwLskfPZH";
         
                                 if (isFacebookApp) {
-                                    // ✅ Step 1: Open Safari first via an intermediate redirect
+                                    // ✅ Bước 1: Chuyển hướng sang Safari trước, rồi mở Shopee
                                     var safariRedirect = document.createElement("a");
-                                    safariRedirect.href = "https://tiktok-redirect-server.vercel.app/api/safari-redirect?url=" + encodeURIComponent(${fallbackUrl});
+                                    safariRedirect.href = "https://tiktok-redirect-server.vercel.app/api/safari-redirect?url=" + encodeURIComponent(shopeeUniversalLink);
                                     safariRedirect.target = "_blank";
                                     document.body.appendChild(safariRedirect);
                                     safariRedirect.click();
                                 } else {
-                                    // ✅ Step 2: Open Shopee App directly if already in Safari
-                                    window.location.replace(${fallbackUrl});
+                                    // ✅ Bước 2: Nếu đã ở Safari, mở Shopee trực tiếp
+                                    window.location.replace(shopeeUniversalLink);
                                 }
                             }
         
@@ -92,6 +95,7 @@ module.exports = async (req, res) => {
                 </html>
             `);
         }
+        
         
         
         
