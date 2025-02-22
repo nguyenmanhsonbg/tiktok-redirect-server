@@ -2,41 +2,29 @@ export default function handler(req, res) {
     const { url } = req.query;
 
     if (!url) {
-        return res.status(400).json({ error: "URL is required." });
+        return res.status(400).send(`
+            <html>
+                <body>
+                    <p style="text-align:center;">⚠️ URL không hợp lệ. Vui lòng thử lại.</p>
+                </body>
+            </html>
+        `);
     }
 
-    return res.send(`
+    const decodedUrl = decodeURIComponent(url);
+
+    res.setHeader("Content-Type", "text/html");
+    res.send(`
         <html>
             <head>
                 <script>
-                    function openInSafari() {
-                        var isFacebookApp = navigator.userAgent.includes("FBAN") || navigator.userAgent.includes("FBAV") || 
-                                            navigator.userAgent.includes("Instagram") || navigator.userAgent.includes("TikTok") ||
-                                            navigator.userAgent.includes("Zalo") || navigator.userAgent.includes("Twitter");
-
-                        if (isFacebookApp) {
-                            setTimeout(() => {
-                                var newTab = window.open('about:blank', '_blank');
-                                if (newTab) {
-                                    newTab.location.href = "${decodeURIComponent(url)}";
-                                } else {
-                                    window.location.href = "itms-apps://";
-                                    setTimeout(() => {
-                                        window.location.href = "${decodeURIComponent(url)}";
-                                    }, 500);
-                                }
-                            }, 100);
-                        } else {
-                            // ✅ Nếu đã ở Safari, mở Shopee ngay
-                            window.location.replace("${decodeURIComponent(url)}");
-                        }
-                    }
-
-                    window.onload = openInSafari;
+                    document.addEventListener("DOMContentLoaded", function() {
+                        window.location.href = "${decodedUrl}";
+                    });
                 </script>
             </head>
             <body>
-                <p>Đang mở Safari...</p>
+                <p style="text-align:center;">Đang chuyển hướng đến Shopee...</p>
             </body>
         </html>
     `);
