@@ -2,7 +2,7 @@
   "version": 2,
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "src": "/.well-known/apple-app-site-association", "dest": "/apple-app-site-association", "headers": { "Content-Type": "application/json" } },
+    { "source": "/.well-known/apple-app-site-association", "dest": "/apple-app-site-association", "headers": { "Content-Type": "application/json" } },
     { "source": "/(.*)", "destination": "/public/index.html" }
   ],
   "headers": [
