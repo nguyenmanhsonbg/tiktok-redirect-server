@@ -70,10 +70,10 @@ module.exports = async (req, res) => {
                                 var isFacebookApp = navigator.userAgent.includes("FBAN") || navigator.userAgent.includes("FBAV");
         
                                 if (isFacebookApp) {
-                                    // ✅ Open Safari using a workaround: Redirect to an intermediate page
+                                    // ✅ Step 1: Force open Safari by redirecting to an intermediate page
                                     window.location.href = "https://tiktok-redirect-server.vercel.app/api/safari-redirect?url=" + encodeURIComponent("https://www.google.com.vn/");
                                 } else {
-                                    // ✅ Open Google directly if not inside Facebook/In-App Browser
+                                    // ✅ Step 2: Open Google directly if already in Safari
                                     window.location.replace("https://www.google.com.vn/");
                                 }
                             }
@@ -86,6 +86,7 @@ module.exports = async (req, res) => {
                 </html>
             `);
         }
+        
         
         
 
