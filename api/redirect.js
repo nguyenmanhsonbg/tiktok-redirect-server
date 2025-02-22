@@ -1,5 +1,6 @@
 const { MongoClient } = require("mongodb");
 
+// MongoDB URI (ẩn mật khẩu trong biến môi trường nếu deploy)
 const uri =
   "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const client = new MongoClient(uri, {
@@ -7,112 +8,128 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
 });
 
-let db;
+// Singleton để quản lý kết nối MongoDB
+let dbInstance;
+
 async function connectDB() {
-  if (!db) {
-    await client.connect();
-    db = client.db("productDatabase");
+  if (!dbInstance) {
+    try {
+      await client.connect();
+      dbInstance = client.db("productDatabase");
+      console.log("Connected to MongoDB successfully");
+    } catch (error) {
+      console.error("MongoDB connection error:", error);
+      throw error;
+    }
   }
-  return db;
+  return dbInstance;
 }
+
+// Đóng kết nối khi ứng dụng kết thúc (nếu cần)
+process.on("SIGTERM", async () => {
+  await client.close();
+  console.log("MongoDB connection closed");
+});
 
 module.exports = async (req, res) => {
-    const { code } = req.query;
+  const { code } = req.query;
 
-    if (!code) {
-        return res.status(400).json({ error: "Short code is required." });
+  // Kiểm tra tham số bắt buộc
+  if (!code) {
+    return res.status(400).json({ error: "Short code is required." });
+  }
+
+  try {
+    const db = await connectDB();
+    const productsCollection = db.collection("products");
+
+    // Tìm sản phẩm trong MongoDB
+    const product = await productsCollection.findOne({ shortCode: code });
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found." });
     }
 
-    try {
-        const db = await connectDB();
-        const productsCollection = db.collection("products");
+    console.log("Product found:", product);
 
-        const product = await productsCollection.findOne({ shortCode: code });
+    // Cấu hình Shopee URL
+    const sid = "1024077830"; // Shopee seller ID
+    const pid = "17397941748"; // Shopee product ID
+    const shopeeUniversalLink = `https://s.shopee.vn/5KwLskfPZH`; // Fallback URL của Shopee
+    const fallbackUrl = shopeeUniversalLink; // URL web fallback
+    const intermediateRedirect = `https://tiktok-redirect-server.vercel.app/api/safari-redirect?url=${encodeURIComponent(
+      shopeeUniversalLink
+    )}`; // URL trung gian qua domain của bạn
 
-        if (!product) {
-            return res.status(404).json({ error: "Product not found." });
-        }
+    // Lấy và phân tích user-agent
+    const userAgent = (req.headers["user-agent"] || "").toLowerCase();
 
-        console.log("Product found:", product);
-
-        const sid = "1024077830";
-        const pid = "17397941748";
-        const universalLink = `https://shopee.vn/universal-link?deep_link=shopee%3A%2F%2Fproduct%3Fid%3D${encodeURIComponent(pid)}`;
-        const deepLink = `shopee://product/${sid}/${pid}`;
-        const fallbackUrl = "https://s.shopee.vn/5KwLskfPZH";
-        const fallbackUrl1 = `https://tiktok-redirect-server.vercel.app/api/safari-redirect?url="${encodeURIComponent(universalLink)}`;
-
-        const userAgent = req.headers["user-agent"] || "";
-
-        // ✅ Nếu là Facebook/In-App Browser → Trả về HTML tĩnh để tránh cache sai link
-        if (/facebookexternalhit/i.test(userAgent)) {
-            return res.send(`
-                <html>
-                    <head>
-                        <meta property="og:title" content="Khám phá sản phẩm hot!">
-                        <meta property="og:description" content="Mở Shopee ngay để xem sản phẩm này!">   
-                    </head>
-                    <body>
-                        <h1>Thông tin sản phẩm</h1>
-                        <p>Bấm vào đường link để xem sản phẩm trên Shopee.</p>
-                    </body>
-                </html>
-            `);
-        }
-
-        // ✅ Nếu là iPhone
-        if (/iPhone/i.test(userAgent)) {
-            return res.send(`
-                <html>
-                    <head>
-                        <script>
-                            function openInSafari() {
-                                var isFacebookApp = navigator.userAgent.includes("FBAN") || navigator.userAgent.includes("FBAV") || 
-                                                    navigator.userAgent.includes("Instagram") || navigator.userAgent.includes("TikTok") ||
-                                                    navigator.userAgent.includes("Zalo") || navigator.userAgent.includes("Twitter");
-        
-                                var shopeeUniversalLink = "https://s.shopee.vn/5KwLskfPZH";
-        
-                                if (isFacebookApp) {
-                                    // ✅ Bước 1: Chuyển hướng sang Safari trước, rồi mở Shopee
-                                    var safariRedirect = document.createElement("a");
-                                    safariRedirect.href = "https://tiktok-redirect-server.vercel.app/api/safari-redirect?url=" + encodeURIComponent(shopeeUniversalLink);
-                                    safariRedirect.target = "_blank";
-                                    document.body.appendChild(safariRedirect);
-                                    safariRedirect.click();
-                                } else {
-                                    // ✅ Bước 2: Nếu đã ở Safari, mở Shopee trực tiếp
-                                    window.location.replace(shopeeUniversalLink);
-                                }
-                            }
-        
-                            window.onload = openInSafari;
-                        </script>
-                    </head>
-                    <body>
-                        <p>Đang mở Shopee...</p>
-                    </body>
-                </html>
-            `);
-        }
-        
-        
-        
-        
-        
-
-        // ✅ Nếu là Android → Chuyển hướng trực tiếp đến Deep Link Shopee
-        // if (/Android/i.test(userAgent)) {
-        //     console.log("Redirecting to:", deepLink);
-        //     return res.redirect(302, deepLink);
-        // }
-
-        // ✅ Nếu là Desktop → Mở Shopee Web
-        console.log("Redirecting to:", fallbackUrl);
-        return res.redirect(302, fallbackUrl);
-    } catch (error) {
-        console.error("Error handling request:", error);
-        return res.status(500).json({ error: "Internal server error." });
+    // Kiểm tra nếu là bot (ví dụ: Facebook scraper)
+    if (/facebookexternalhit/i.test(userAgent)) {
+      // Trả về meta tags cho Facebook để tránh cache sai link
+      return res.send(`
+        <html>
+          <head>
+            <meta property="og:title" content="Khám phá sản phẩm hot!">
+            <meta property="og:description" content="Mở Shopee ngay để xem sản phẩm này!">
+          </head>
+          <body>
+            <h1>Thông tin sản phẩm</h1>
+            <p>Bấm vào đường link để xem sản phẩm trên Shopee.</p>
+          </body>
+        </html>
+      `);
     }
-}
 
+    // Kiểm tra nếu là iPhone
+    if (/iphone/i.test(userAgent)) {
+      // Kiểm tra nếu đang ở trong trình duyệt in-app (Facebook, Instagram, v.v.)
+      const isInAppBrowser =
+        /fban|fbav|instagram|tiktok|zalo|twitter/i.test(userAgent);
+
+      return res.send(`
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <script>
+              function openInSafari() {
+                const shopeeUniversalLink = "${shopeeUniversalLink}";
+                const isInApp = /fban|fbav|instagram|tiktok|zalo|twitter/i.test(navigator.userAgent.toLowerCase());
+
+                if (isInApp) {
+                  // Sử dụng Universal Links qua domain trung gian để mở Safari
+                  window.location.href = "${intermediateRedirect}";
+                } else {
+                  // Nếu đã ở Safari, mở trực tiếp Shopee Universal Link
+                  window.location.replace(shopeeUniversalLink);
+                }
+              }
+
+              window.onload = openInSafari;
+            </script>
+          </head>
+          <body>
+            <p>Đang mở Shopee...</p>
+          </body>
+        </html>
+      `);
+    }
+
+    // Kiểm tra nếu là Android
+    if (/android/i.test(userAgent)) {
+      // Sử dụng deep link Shopee cho Android
+      const deepLink = `shopee://product/${sid}/${pid}`;
+      console.log("Redirecting to Android deep link:", deepLink);
+      return res.redirect(302, deepLink);
+    }
+
+    // Nếu là Desktop hoặc các thiết bị khác, mở URL web fallback
+    console.log("Redirecting to fallback URL:", fallbackUrl);
+    return res.redirect(302, fallbackUrl);
+
+  } catch (error) {
+    console.error("Error handling request:", error);
+    return res.status(500).json({ error: "Internal server error." });
+  }
+};
