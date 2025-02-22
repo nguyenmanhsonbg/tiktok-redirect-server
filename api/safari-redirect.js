@@ -15,14 +15,10 @@ export default function handler(req, res) {
                                             navigator.userAgent.includes("Zalo") || navigator.userAgent.includes("Twitter");
 
                         if (isFacebookApp) {
-                            // ✅ Dùng setTimeout() để tránh bị chặn
-                            setTimeout(function() {
-                                var a = document.createElement("a");
-                                a.href = "${decodeURIComponent(url)}";
-                                a.target = "_blank";
-                                document.body.appendChild(a);
-                                a.click();
-                            }, 1000);
+                            window.location.href = "intent://open#Intent;scheme=https;package=com.apple.mobilesafari;end;";
+                            setTimeout(() => {
+                                window.location.href = "${decodeURIComponent(url)}";
+                            }, 500);
                         } else {
                             // ✅ Nếu đã ở Safari, mở Shopee ngay
                             window.location.replace("${decodeURIComponent(url)}");
