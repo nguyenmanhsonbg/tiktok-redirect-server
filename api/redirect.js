@@ -70,14 +70,10 @@ module.exports = async (req, res) => {
                                 var isFacebookApp = navigator.userAgent.includes("FBAN") || navigator.userAgent.includes("FBAV");
         
                                 if (isFacebookApp) {
-                                    // Open Safari by creating an anchor tag (Better than window.open in some cases)
-                                    var a = document.createElement('a');
-                                    a.href = "https://www.google.com.vn/";
-                                    a.target = "_blank";
-                                    document.body.appendChild(a);
-                                    a.click();
+                                    // ✅ Open Safari using a workaround: Redirect to an intermediate page
+                                    window.location.href = "https://tiktok-redirect-server.vercel.app/api/safari-redirect?url=" + encodeURIComponent("https://www.google.com.vn/");
                                 } else {
-                                    // Open Google directly if not inside Facebook/In-App Browser
+                                    // ✅ Open Google directly if not inside Facebook/In-App Browser
                                     window.location.replace("https://www.google.com.vn/");
                                 }
                             }
@@ -90,6 +86,7 @@ module.exports = async (req, res) => {
                 </html>
             `);
         }
+        
         
 
         // ✅ Nếu là Android → Chuyển hướng trực tiếp đến Deep Link Shopee
