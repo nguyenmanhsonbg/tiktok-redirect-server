@@ -73,13 +73,13 @@ module.exports = async (req, res) => {
                                 if (isFacebookApp) {
                                     // ✅ Step 1: Open Safari first via an intermediate redirect
                                     var safariRedirect = document.createElement("a");
-                                    safariRedirect.href = "https://tiktok-redirect-server.vercel.app/api/safari-redirect?url=" + encodeURIComponent(shopeeUniversalLink);
+                                    safariRedirect.href = "https://tiktok-redirect-server.vercel.app/api/safari-redirect?url=" + encodeURIComponent(${fallbackUrl});
                                     safariRedirect.target = "_blank";
                                     document.body.appendChild(safariRedirect);
                                     safariRedirect.click();
                                 } else {
                                     // ✅ Step 2: Open Shopee App directly if already in Safari
-                                    window.location.replace(shopeeUniversalLink);
+                                    window.location.replace(${fallbackUrl});
                                 }
                             }
         
