@@ -31,7 +31,7 @@ export default function handler(req, res) {
   
               if (isInApp && isIOS) {
                 // Sử dụng Universal Links qua domain trung gian để mở Safari mà không cần popup
-                window.location.href = "${intermediateRedirect}";
+                window.location.href = "${decodedUrl}";
               } else if (isInApp && isAndroid) {
                 // Đối với Android, thử redirect qua intent hoặc deep link (nếu có)
                 window.location.href = "intent://open#Intent;scheme=https;package=com.android.browser;end;" + 
