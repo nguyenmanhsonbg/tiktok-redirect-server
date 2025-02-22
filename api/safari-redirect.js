@@ -8,28 +8,31 @@ export default function handler(req, res) {
     return res.send(`
         <html>
             <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <script>
-                    function openInSafari() {
-                        var isFacebookApp = navigator.userAgent.includes("FBAN") || navigator.userAgent.includes("FBAV") || 
-                                            navigator.userAgent.includes("Instagram") || navigator.userAgent.includes("TikTok") ||
-                                            navigator.userAgent.includes("Zalo") || navigator.userAgent.includes("Twitter");
+                    function attemptRedirect() {
+                        var userAgent = navigator.userAgent.toLowerCase();
+                        var isInApp = /fban|fbav|instagram|tiktok|zalo|twitter/.test(userAgent);
 
-                        if (isFacebookApp) {
-                            window.location.href = "intent://open#Intent;scheme=https;package=com.apple.mobilesafari;end;";
+                        if (isInApp) {
+                            // Đối với iOS, thử dùng Universal Links hoặc khuyến khích mở Safari
+                            window.location.href = "${decodeURIComponent(url)}";
                             setTimeout(() => {
-                                window.location.href = "${decodeURIComponent(url)}";
-                            }, 500);
+                                // Hiển thị thông báo nếu không tự động thoát
+                                document.body.innerHTML = "<p>Vui lòng nhấn vào nút '...' ở góc trên bên phải và chọn 'Mở trong Safari' để tiếp tục.</p>";
+                            }, 1000);
                         } else {
-                            // ✅ Nếu đã ở Safari, mở Shopee ngay
+                            // Nếu đã ở ngoài in-app, redirect ngay
                             window.location.replace("${decodeURIComponent(url)}");
                         }
                     }
 
-                    window.onload = openInSafari;
+                    window.onload = attemptRedirect;
                 </script>
             </head>
             <body>
-                <p>Đang mở Safari...</p>
+                <p>Đang chuyển hướng...</p>
             </body>
         </html>
     `);
