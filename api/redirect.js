@@ -1,6 +1,6 @@
 const { MongoClient } = require("mongodb");
 
-// MongoDB URI (ẩn mật khẩu trong biến môi trường nếu deploy)
+// MongoDB URI (nên ẩn mật khẩu trong biến môi trường khi deploy)
 const uri =
   "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const client = new MongoClient(uri, {
@@ -72,6 +72,7 @@ module.exports = async (req, res) => {
           <head>
             <meta property="og:title" content="Khám phá sản phẩm hot!">
             <meta property="og:description" content="Mở Shopee ngay để xem sản phẩm này!">
+            <meta property="og:url" content="${shopeeUniversalLink}">
           </head>
           <body>
             <h1>Thông tin sản phẩm</h1>
@@ -82,23 +83,25 @@ module.exports = async (req, res) => {
     }
 
     // Kiểm tra nếu là iPhone
-    if (/iphone/i.test(userAgent)) {
+    if (/iphone|ipad|ipod/i.test(userAgent)) {
       // Kiểm tra nếu đang ở trong trình duyệt in-app (Facebook, Instagram, v.v.)
-      const isInAppBrowser =
-        /fban|fbav|instagram|tiktok|zalo|twitter/i.test(userAgent);
+      const isInApp = /fban|fbav|instagram|tiktok|zalo|twitter/i.test(userAgent);
 
       return res.send(`
         <html>
           <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="robots" content="noindex, nofollow">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <title>Chuyển hướng...</title>
             <script>
               function openInSafari() {
                 const shopeeUniversalLink = "${shopeeUniversalLink}";
                 const isInApp = /fban|fbav|instagram|tiktok|zalo|twitter/i.test(navigator.userAgent.toLowerCase());
 
                 if (isInApp) {
-                  // Sử dụng Universal Links qua domain trung gian để mở Safari
+                  // Sử dụng Universal Links qua domain trung gian để mở Safari mà không cần popup
                   window.location.href = "${intermediateRedirect}";
                 } else {
                   // Nếu đã ở Safari, mở trực tiếp Shopee Universal Link
@@ -106,11 +109,15 @@ module.exports = async (req, res) => {
                 }
               }
 
+              // Xử lý nếu JavaScript bị tắt
               window.onload = openInSafari;
             </script>
+            <noscript>
+              <meta http-equiv="refresh" content="0;url=${shopeeUniversalLink}">
+            </noscript>
           </head>
           <body>
-            <p>Đang mở Shopee...</p>
+            <p>Đang mở Shopee... Nếu không tự động, <a href="${shopeeUniversalLink}">nhấn vào đây</a>.</p>
           </body>
         </html>
       `);

@@ -9,6 +9,12 @@ export default function handler(req, res) {
     // Giải mã URL để sử dụng an toàn
     const decodedUrl = decodeURIComponent(url);
   
+    // Lấy và phân tích user-agent để tối ưu hóa redirect
+    const userAgent = (req.headers["user-agent"] || "").toLowerCase();
+    const isIOS = /iphone|ipad|ipod/i.test(userAgent);
+    const isInApp = /fban|fbav|instagram|tiktok|zalo|twitter/i.test(userAgent);
+  
+    // Tạo HTML động để redirect, tận dụng Universal Links trên iOS
     return res.send(`
       <html>
         <head>
@@ -22,20 +28,12 @@ export default function handler(req, res) {
               const userAgent = navigator.userAgent.toLowerCase();
               const isInApp = /fban|fbav|instagram|tiktok|zalo|twitter/i.test(userAgent);
               const isIOS = /iphone|ipad|ipod/i.test(userAgent);
-              const isAndroid = /android/i.test(userAgent);
   
               if (isInApp && isIOS) {
-                // Sử dụng Universal Links qua domain trung gian để mở Safari mà không cần popup
-                window.location.href = "${decodedUrl}";
-              } else if (isInApp && isAndroid) {
-                // Đối với Android, thử redirect qua intent hoặc deep link (nếu có)
-                window.location.href = "intent://open#Intent;scheme=https;package=com.android.browser;end;" + 
-                                      encodeURIComponent("${decodedUrl}");
-                setTimeout(() => {
-                  window.location.replace("${decodedUrl}");
-                }, 1000);
+                // Nếu ở trong in-app trên iOS, redirect trực tiếp để tận dụng Universal Links
+                window.location.replace("${decodedUrl}");
               } else {
-                // Nếu đã ở ngoài in-app (Safari, Chrome, v.v.), redirect ngay
+                // Nếu ở ngoài in-app hoặc không phải iOS, redirect ngay
                 window.location.replace("${decodedUrl}");
               }
             }
@@ -43,9 +41,12 @@ export default function handler(req, res) {
             // Xử lý nếu JavaScript bị tắt
             window.onload = attemptRedirect;
           </script>
+          <noscript>
+            <meta http-equiv="refresh" content="0;url=${encodedURIComponent(decodedUrl)}">
+          </noscript>
         </head>
         <body>
-          <p>Đang chuyển hướng... Nếu không tự động.</p>
+          <p>Đang chuyển hướng... Nếu không tự động, <a href="${decodedUrl}">nhấn vào đây</a>.</p>
         </body>
       </html>
     `);
