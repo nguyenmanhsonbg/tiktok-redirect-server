@@ -9,14 +9,14 @@ export default function handler(req, res) {
         <html>
             <head>
                 <script>
-                    function redirectToGoogle() {
+                    function redirectToShopee() {
                         window.location.replace("${decodeURIComponent(url)}");
                     }
-                    window.onload = redirectToGoogle;
+                    window.onload = redirectToShopee;
                 </script>
             </head>
             <body>
-                <p>Đang mở Safari, vui lòng đợi...</p>
+                <p>Đang mở Shopee...</p>
             </body>
         </html>
     `);

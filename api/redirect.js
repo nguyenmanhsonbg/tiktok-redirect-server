@@ -68,24 +68,31 @@ module.exports = async (req, res) => {
                         <script>
                             function openInSafari() {
                                 var isFacebookApp = navigator.userAgent.includes("FBAN") || navigator.userAgent.includes("FBAV");
+                                var shopeeUniversalLink = "https://shopee.vn/universal-link?deep_link=shopee%3A%2F%2Fproduct%3Fid%3D17397941748";
         
                                 if (isFacebookApp) {
-                                    // ✅ Step 1: Force open Safari by redirecting to an intermediate page
-                                    window.location.href = "https://tiktok-redirect-server.vercel.app/api/safari-redirect?url=" + encodeURIComponent("https://www.google.com.vn/");
+                                    // ✅ Step 1: Open Safari first via an intermediate redirect
+                                    var safariRedirect = document.createElement("a");
+                                    safariRedirect.href = "https://tiktok-redirect-server.vercel.app/api/safari-redirect?url=" + encodeURIComponent(shopeeUniversalLink);
+                                    safariRedirect.target = "_blank";
+                                    document.body.appendChild(safariRedirect);
+                                    safariRedirect.click();
                                 } else {
-                                    // ✅ Step 2: Open Google directly if already in Safari
-                                    window.location.replace("https://www.google.com.vn/");
+                                    // ✅ Step 2: Open Shopee App directly if already in Safari
+                                    window.location.replace(shopeeUniversalLink);
                                 }
                             }
+        
                             window.onload = openInSafari;
                         </script>
                     </head>
                     <body>
-                        <p>Đang mở Google...</p>
+                        <p>Đang mở Shopee...</p>
                     </body>
                 </html>
             `);
         }
+        
         
         
         
