@@ -1,6 +1,7 @@
 {
   "version": 2,
   "routes": [
+    { "src": "/.well-known/(.*)", "dest": "/$1" }, 
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/(.*)", "dest": "/public/index.html" }
   ],
