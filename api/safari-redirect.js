@@ -9,11 +9,6 @@ export default function handler(req, res) {
     // Giải mã URL để sử dụng an toàn
     const decodedUrl = decodeURIComponent(url);
   
-    // Domain trung gian của bạn (giả sử bạn đã cấu hình Universal Links)
-    const intermediateRedirect = `https://tiktok-redirect-server.vercel.app/api/safari-redirect?url=${encodeURIComponent(
-      decodedUrl
-    )}`; // Thay bằng domain thực tế của bạn
-  
     return res.send(`
       <html>
         <head>
@@ -48,12 +43,9 @@ export default function handler(req, res) {
             // Xử lý nếu JavaScript bị tắt
             window.onload = attemptRedirect;
           </script>
-          <noscript>
-            <meta http-equiv="refresh" content="0;url=${encodedUrl}">
-          </noscript>
         </head>
         <body>
-          <p>Đang chuyển hướng... Nếu không tự động, <a href="${encodedUrl}">nhấn vào đây</a>.</p>
+          <p>Đang chuyển hướng... Nếu không tự động.</p>
         </body>
       </html>
     `);
