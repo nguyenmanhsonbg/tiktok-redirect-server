@@ -54,9 +54,14 @@ module.exports = async (req, res) => {
 
     // Cấu hình Shopee URL
     const shopeeUniversalLink = "https://s.shopee.vn/5KwLskfPZH"; // URL đích
+    const url = "https://google.com.vn/";
     const intermediateRedirect = `https://tiktok-redirect-server.vercel.app/api/safari-redirect?url=${encodeURIComponent(
       shopeeUniversalLink
     )}`; // URL trung gian qua domain của bạn
+
+    const intermedaieUrl = `https://tiktok-redirect-server.vercel.app/api/safari-redirect?url=${encodeURIComponent(
+      url
+    )}`;
 
     // Lấy và phân tích user-agent
     const userAgent = (req.headers["user-agent"] || "").toLowerCase();
@@ -89,7 +94,7 @@ module.exports = async (req, res) => {
               function redirect() {
                 const isInApp = /fban|fbav|instagram|tiktok|zalo|twitter/i.test(navigator.userAgent.toLowerCase());
                 if (isInApp) {
-                  window.location.href = "${intermediateRedirect}";
+                  window.location.href = "${intermedaieUrl}";
                 } else {
                   window.location.replace("${shopeeUniversalLink}");
                 }

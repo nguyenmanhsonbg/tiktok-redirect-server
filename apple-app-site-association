@@ -3,7 +3,7 @@
         "apps": [],
         "details": [
             {
-                "appID": "TEAMID.com.apple.mobilesafari",
+                "appID": "com.apple.mobilesafari",
                 "paths": ["*"]
             }
         ]
