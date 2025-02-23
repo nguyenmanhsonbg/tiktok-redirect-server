@@ -1,5 +1,6 @@
 const { MongoClient } = require("mongodb");
-const path = require("path"); // Thêm module path để xử lý đường dẫn file
+const fs = require("fs");
+const path = require("path");
 
 // MongoDB URI (nên ẩn mật khẩu trong biến môi trường khi deploy)
 const uri =
