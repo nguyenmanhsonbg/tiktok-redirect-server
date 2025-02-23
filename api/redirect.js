@@ -31,7 +31,7 @@ connectDB().catch(console.error);
 app.use(express.static(path.join(__dirname, "public")));
 
 // Redirect route
-app.get("/redirect", async (req, res) => {
+module.exports = async (req, res) => {
     const { code } = req.query;
 
     if (!code) {
@@ -81,7 +81,7 @@ app.get("/redirect", async (req, res) => {
         console.error("Error handling request:", error);
         return res.status(500).json({ error: "Internal server error." });
     }
-});
+};
 
 // Close MongoDB connection on exit
 process.on("SIGTERM", async () => {
@@ -89,6 +89,3 @@ process.on("SIGTERM", async () => {
     console.log("MongoDB connection closed");
 });
 
-// Start the Express server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
