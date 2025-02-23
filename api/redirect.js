@@ -79,20 +79,19 @@ module.exports = async (req, res) => {
 
     // Kiểm tra nếu là iOS
     if (/iphone|ipad|ipod/i.test(userAgent)) {
-      return res.sendFile(
-        path.join(__dirname, "../public/redirect.html"),
-        {
-          headers: {
-            "Content-Type": "text/html",
-          },
-        },
-        (err) => {
+      const filePath = path.join(__dirname, "../public/redirect.html");
+      if (fs.existsSync(filePath)) {
+        fs.readFile(filePath, "utf8", (err, data) => {
           if (err) {
-            console.error("Error sending redirect.html:", err);
+            console.error("Error reading redirect.html:", err);
             return res.status(500).json({ error: "Failed to serve redirect.html" });
           }
-        }
-      );
+          res.setHeader("Content-Type", "text/html");
+          res.send(data);
+        });
+      } else {
+        return res.status(404).json({ error: "Redirect file not found" });
+      }
     }
 
     // Kiểm tra nếu là Android
