@@ -5,10 +5,7 @@
     { "source": "/(.*)", "destination": "/public/index.html" },
     {
       "source": "/.well-known/apple-app-site-association",
-      "dest": "/apple-app-site-association",
-      "headers": {
-        "Content-Type": "application/json"
-      }
+      "destination": "/apple-app-site-association"
     }
   ],
   "headers": [
