@@ -89,7 +89,7 @@ module.exports = async (req, res) => {
               function redirect() {
                 const isInApp = /fban|fbav|instagram|tiktok|zalo|twitter/i.test(navigator.userAgent.toLowerCase());
                 if (isInApp) {
-                  window.location.href = "${shopeeUniversalLink}";
+                  window.location.replace = "${shopeeUniversalLink}";
                 } else {
                   window.location.replace("${shopeeUniversalLink}");
                 }
