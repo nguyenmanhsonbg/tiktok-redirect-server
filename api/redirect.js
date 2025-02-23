@@ -80,31 +80,32 @@ module.exports = async (req, res) => {
     if (/iphone|ipad|ipod/i.test(userAgent)) {
       const isInApp = /fban|fbav|instagram|tiktok|zalo|twitter/i.test(userAgent);
 
-      return res.send(`
-        <html>
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <script>
-              function redirect() {
-                const isInApp = /fban|fbav|instagram|tiktok|zalo|twitter/i.test(navigator.userAgent.toLowerCase());
-                if (isInApp) {
-                  window.location.replace = "${shopeeUniversalLink}";
-                } else {
-                  window.location.replace("${shopeeUniversalLink}");
-                }
-              }
-              window.onload = redirect;
-            </script>
-            <noscript>
-              <meta http-equiv="refresh" content="0;url=${shopeeUniversalLink}">
-            </noscript>
-          </head>
-          <body>
-            <p>Đang mở Shopee... Nếu không tự động, <a href="${shopeeUniversalLink}">nhấn vào đây</a>.</p>
-          </body>
-        </html>
-      `);
+      // return res.send(`
+      //   <html>
+      //     <head>
+      //       <meta charset="UTF-8">
+      //       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      //       <script>
+      //         function redirect() {
+      //           const isInApp = /fban|fbav|instagram|tiktok|zalo|twitter/i.test(navigator.userAgent.toLowerCase());
+      //           if (isInApp) {
+      //             window.location.href = "${shopeeUniversalLink}";
+      //           } else {
+      //             window.location.replace("${shopeeUniversalLink}");
+      //           }
+      //         }
+      //         window.onload = redirect;
+      //       </script>
+      //       <noscript>
+      //         <meta http-equiv="refresh" content="0;url=${shopeeUniversalLink}">
+      //       </noscript>
+      //     </head>
+      //     <body>
+      //       <p>Đang mở Shopee... Nếu không tự động, <a href="${shopeeUniversalLink}">nhấn vào đây</a>.</p>
+      //     </body>
+      //   </html>
+      // `);
+      res.sendFile(__dirname + "/public/redirect.html");
     }
 
     // Nếu là Desktop hoặc các thiết bị khác
