@@ -1,8 +1,5 @@
 const { MongoClient } = require("mongodb");
-const express = require("express");
-const path = require("path");
 
-const app = express();
 
 // MongoDB URI (use environment variables in production)
 const uri = "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -26,9 +23,6 @@ async function connectDB() {
     return dbInstance;
 }
 connectDB().catch(console.error);
-
-// Middleware to serve static files
-app.use(express.static(path.join(__dirname, "public")));
 
 // Redirect route
 module.exports = async (req, res) => {
@@ -71,7 +65,7 @@ module.exports = async (req, res) => {
         }
 
         if (/iphone|ipad|ipod/i.test(userAgent)) {
-            res.sendFile(path.join(__dirname, "public", "redirect.html"));
+            return res.sendFile(path.join(__dirname, "public", "redirect.html"));
         } else {
             console.log("Redirecting to Shopee:", shopeeUniversalLink);
             return res.redirect(302, shopeeUniversalLink);

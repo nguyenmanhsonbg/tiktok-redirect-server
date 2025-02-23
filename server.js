@@ -1,10 +1,13 @@
-// const express = require("express");
-// const path = require("path");
+const express = require("express");
+const path = require("path");
 
-// const app = express();
+const app = express();
 
 // // Middleware để xử lý JSON
 // app.use(express.json());
+
+
+app.use(express.static(path.join(__dirname, "public")));
 
 // // Serve các file tĩnh trong thư mục "public"
 // app.use(express.static(path.join(__dirname, "public")));
