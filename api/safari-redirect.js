@@ -1,4 +1,4 @@
-export default function handler(req, res) {
+module.exports = async (req, res) => {
   const { url } = req.query;
 
   // Kiểm tra tham số bắt buộc
@@ -41,4 +41,4 @@ export default function handler(req, res) {
       </body>
     </html>
   `);
-}
+};
