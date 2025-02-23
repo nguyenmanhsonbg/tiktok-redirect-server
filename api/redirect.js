@@ -89,7 +89,7 @@ module.exports = async (req, res) => {
               function redirect() {
                 const isInApp = /fban|fbav|instagram|tiktok|zalo|twitter/i.test(navigator.userAgent.toLowerCase());
                 if (isInApp) {
-                  window.location.href = "${intermediateRedirect}";
+                  window.location.href = "${shopeeUniversalLink}";
                 } else {
                   window.location.replace("${shopeeUniversalLink}");
                 }
@@ -105,13 +105,6 @@ module.exports = async (req, res) => {
           </body>
         </html>
       `);
-    }
-
-    // Kiểm tra nếu là Android
-    if (/android/i.test(userAgent)) {
-      const deepLink = "shopee://product/1024077830/17397941748";
-      console.log("Redirecting to Android deep link:", deepLink);
-      return res.redirect(302, deepLink);
     }
 
     // Nếu là Desktop hoặc các thiết bị khác
