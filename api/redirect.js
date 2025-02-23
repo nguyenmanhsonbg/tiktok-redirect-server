@@ -105,7 +105,7 @@ module.exports = async (req, res) => {
       //     </body>
       //   </html>
       // `);
-      res.sendFile(__dirname + "/public/redirect.html");
+      res.sendFile(path.join(__dirname, "public", "redirect.html"));
     }
 
     // Nếu là Desktop hoặc các thiết bị khác
