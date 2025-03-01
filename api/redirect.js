@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
     console.log("Product found:", product);
 
     // Universal Link của Shopee từ bạn cung cấp
-    const shopeeUniversalLink = "https://s.shopee.vn/AKM70LP3Zu";
+    const shopeeUniversalLink = "https://s.shopee.vn/7zx4gJh1C3";
     const linkWeb ="https://s.shopee.vn/5KwLskfPZH"
 
     // Lấy và phân tích user-agent
