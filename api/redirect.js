@@ -84,7 +84,7 @@ module.exports = async (req, res) => {
             <title>Đang mở Shopee...</title>
             <script>
               function openShopee() {
-                var shopeeURL = "https://s.shopee.vn/5KwLskfPZH";
+                var shopeeURL = "https://s.shopee.vn/AKM70LP3Zu";
       
                 // Kiểm tra nếu đang chạy trong Facebook WebView
                 var ua = navigator.userAgent || "";
@@ -100,7 +100,7 @@ module.exports = async (req, res) => {
             </script>
           </head>
           <body>
-            <p>Nếu không được tự động chuyển hướng, vui lòng <a href="https://s.shopee.vn/5KwLskfPZH">bấm vào đây</a>.</p>
+            <p>Nếu không được tự động chuyển hướng, vui lòng <a href="https://s.shopee.vn/AKM70LP3Zu">bấm vào đây</a>.</p>
           </body>
         </html>
       `);
