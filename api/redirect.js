@@ -83,25 +83,20 @@ module.exports = async (req, res) => {
             <meta charset="utf-8">
             <title>Đang mở Shopee...</title>
             <script>
-              function openShopee() {
-                let shopeeUrl = "${shopeeUniversalLink}";
-                let fallbackUrl = "https://shopee.vn/";
-      
-                let now = Date.now();
-                window.location.href = shopeeUrl;
-      
-                setTimeout(() => {
-                  if (Date.now() - now < 1500) {
-                    window.location.href = fallbackUrl;
-                  }
-                }, 1000);
+              function openExternalBrowser() {
+                var url = "https://s.shopee.vn/5KwLskfPZH";
+                var newWindow = window.open(url, "_blank");
+                
+                if (!newWindow || newWindow.closed || typeof newWindow.closed == "undefined") {
+                  window.location.href = url;
+                }
               }
       
-              openShopee();
+              setTimeout(openExternalBrowser, 100);
             </script>
           </head>
           <body>
-            <p>Nếu không được tự động chuyển hướng, vui lòng <a href="${shopeeUniversalLink}">bấm vào đây</a>.</p>
+            <p>Nếu không được tự động chuyển hướng, vui lòng <a href="https://s.shopee.vn/5KwLskfPZH">bấm vào đây</a>.</p>
           </body>
         </html>
       `);
