@@ -83,16 +83,16 @@ module.exports = async (req, res) => {
             <meta charset="utf-8">
             <title>Đang mở Shopee...</title>
             <script>
-              function openExternalBrowser() {
-                var url = "https://s.shopee.vn/5KwLskfPZH";
-                var newWindow = window.open(url, "_blank");
-                
+              function openInSafari() {
+                var shopeeURL = "https://www.google.com.vn/";
+                var newWindow = window.open(shopeeURL, "_blank");
+      
                 if (!newWindow || newWindow.closed || typeof newWindow.closed == "undefined") {
-                  window.location.href = url;
+                  window.location.href = shopeeURL;
                 }
               }
       
-              setTimeout(openExternalBrowser, 100);
+              setTimeout(openInSafari, 100);
             </script>
           </head>
           <body>
