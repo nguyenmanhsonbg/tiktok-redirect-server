@@ -55,9 +55,7 @@ module.exports = async (req, res) => {
 
     // Cấu hình Shopee URL (mở ứng dụng Shopee)
     const shopeeUniversalLink = "https://s.shopee.vn/5KwLskfPZH"; // URL đích để mở ứng dụng Shopee
-    const intermediateRedirect = `https://tiktok-redirect-server.vercel.app/api/safari-redirect?url=${encodeURIComponent(
-      shopeeUniversalLink
-    )}`; // URL trung gian qua domain của bạn
+
 
     // Lấy và phân tích user-agent
     const userAgent = (req.headers["user-agent"] || "").toLowerCase();
@@ -79,7 +77,24 @@ module.exports = async (req, res) => {
 
     // Kiểm tra nếu là iOS
     if (/iphone|ipad|ipod/i.test(userAgent)) {
-      return res.redirect(302, shopeeUniversalLink);
+      return res.send(`
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <title>Đang mở Shopee...</title>
+            <meta http-equiv="refresh" content="0; url=${shopeeUniversalLink}">
+            <script>
+              setTimeout(() => {
+                window.location.href = "${shopeeUniversalLink}";
+              }, 100);
+            </script>
+          </head>
+          <body>
+            <p>Nếu không được tự động chuyển hướng, vui lòng <a href="${shopeeUniversalLink}">bấm vào đây</a>.</p>
+          </body>
+        </html>
+      `);
+      
     }
 
     // Kiểm tra nếu là Android
