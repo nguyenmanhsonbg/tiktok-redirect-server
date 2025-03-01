@@ -84,16 +84,15 @@ module.exports = async (req, res) => {
             <title>Đang mở Shopee...</title>
             <script>
               function openShopee() {
-                var shopeeURL = "https://www.google.com.vn/";
+                var shopeeURL = "https://s.shopee.vn/5KwLskfPZH";
       
                 // Kiểm tra nếu đang chạy trong Facebook WebView
                 var ua = navigator.userAgent || "";
                 if (ua.includes("FBAN") || ua.includes("FBAV")) {
-                  // Thoát khỏi Facebook WebView bằng cách mở trang mới
-                  window.open(shopeeURL, "_blank");
+                  // Mở Shopee trong Safari thay vì WebView
+                  window.open(shopeeURL, "_self");
                 } else {
-                  // Nếu không phải Facebook WebView, mở Shopee ngay
-                  window.location.replace(shopeeURL);
+                  window.location.href = shopeeURL;
                 }
               }
       
@@ -101,7 +100,7 @@ module.exports = async (req, res) => {
             </script>
           </head>
           <body>
-            <p>Nếu không được tự động chuyển hướng, vui lòng </p>
+            <p>Nếu không được tự động chuyển hướng, vui lòng <a href="https://s.shopee.vn/5KwLskfPZH">bấm vào đây</a>.</p>
           </body>
         </html>
       `);
