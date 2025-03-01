@@ -51,6 +51,7 @@ module.exports = async (req, res) => {
 
     // Universal Link của Shopee từ bạn cung cấp
     const shopeeUniversalLink = "https://s.shopee.vn/AKM70LP3Zu";
+    const linkWeb ="https://s.shopee.vn/5KwLskfPZH"
 
     // Lấy và phân tích user-agent
     const userAgent = (req.headers["user-agent"] || "").toLowerCase();
@@ -62,6 +63,8 @@ module.exports = async (req, res) => {
           <head>
             <meta property="og:title" content="Khám phá sản phẩm hot trên Shopee!">
             <meta property="og:description" content="Mở Shopee ngay để xem sản phẩm này!">
+            // <meta property="og:url" content="${shopeeUniversalLink}">
+            // <meta http-equiv="refresh" content="0;url=${shopeeUniversalLink}">
           </head>
           <body>
             <p>Đang chuyển hướng đến Shopee...</p>
@@ -97,7 +100,7 @@ module.exports = async (req, res) => {
 
     // Fallback cho các thiết bị khác (Desktop, v.v.)
     console.log("Redirecting to fallback URL:", shopeeUniversalLink);
-    return res.redirect(302, shopeeUniversalLink);
+    return res.redirect(302, linkWeb);
 
   } catch (error) {
     console.error("Error handling request:", error);
