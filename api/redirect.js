@@ -1,6 +1,4 @@
 const { MongoClient } = require("mongodb");
-const fs = require("fs");
-const path = require("path");
 
 // MongoDB URI (nên ẩn mật khẩu trong biến môi trường khi deploy)
 const uri =
@@ -13,7 +11,6 @@ const client = new MongoClient(uri, {
 // Singleton cho kết nối MongoDB
 let dbInstance;
 
-// Kết nối tới MongoDB một lần
 async function connectDB() {
   if (!dbInstance) {
     try {
@@ -28,7 +25,6 @@ async function connectDB() {
   return dbInstance;
 }
 
-// Kết nối tới MongoDB khi khởi động (không cần thiết, nhưng giúp giảm độ trễ)
 connectDB().catch(console.error);
 
 // Route redirect
@@ -53,68 +49,55 @@ module.exports = async (req, res) => {
 
     console.log("Product found:", product);
 
-    // Cấu hình Shopee URL (mở ứng dụng Shopee)
-    const shopeeUniversalLink = "https://s.shopee.vn/5KwLskfPZH"; // URL đích để mở ứng dụng Shopee
-
+    // Universal Link của Shopee từ bạn cung cấp
+    const shopeeUniversalLink = "https://s.shopee.vn/AKM70LP3Zu";
 
     // Lấy và phân tích user-agent
     const userAgent = (req.headers["user-agent"] || "").toLowerCase();
 
-    // Kiểm tra nếu là bot (Facebook scraper)
+    // Xử lý khi Facebook bot truy cập (trả về HTML cho Open Graph)
     if (/facebookexternalhit/i.test(userAgent)) {
       return res.send(`
         <html>
           <head>
-            <meta property="og:title" content="Khám phá sản phẩm hot!">
+            <meta property="og:title" content="Khám phá sản phẩm hot trên Shopee!">
             <meta property="og:description" content="Mở Shopee ngay để xem sản phẩm này!">
+            <meta property="og:url" content="${shopeeUniversalLink}">
+            <meta http-equiv="refresh" content="0;url=${shopeeUniversalLink}">
           </head>
           <body>
-            <p>Bấm vào đường link để xem sản phẩm trên Shopee.</p>
+            <p>Đang chuyển hướng đến Shopee...</p>
           </body>
         </html>
       `);
     }
 
-    // Kiểm tra nếu là iOS
+    // Xử lý cho iOS (bao gồm Facebook WebView)
     if (/iphone|ipad|ipod/i.test(userAgent)) {
+      // Trả về HTML với redirect tự động để vượt qua WebView
       return res.send(`
-        <html>
+         <html>
           <head>
-            <meta charset="utf-8">
-            <title>Đang mở Shopee...</title>
-            <script>
-              function openShopee() {
-                var shopeeURL = "https://s.shopee.vn/AKM70LP3Zu";
-      
-                // Kiểm tra nếu đang chạy trong Facebook WebView
-                var ua = navigator.userAgent || "";
-                if (ua.includes("FBAN") || ua.includes("FBAV")) {
-                  // Mở Shopee trong Safari thay vì WebView
-                  window.open(shopeeURL, "_self");
-                } else {
-                  window.location.href = shopeeURL;
-                }
-              }
-      
-              setTimeout(openShopee, 100);
-            </script>
+            <meta http-equiv="refresh" content="0;url=${shopeeUniversalLink}">
           </head>
           <body>
-            <p>Nếu không được tự động chuyển hướng, vui lòng <a href="https://s.shopee.vn/AKM70LP3Zu">bấm vào đây</a>.</p>
+            <p>Đang chuyển hướng đến Shopee...</p>
+            <script>
+              window.location.href = "${shopeeUniversalLink}";
+            </script>
           </body>
         </html>
       `);
-      
     }
 
-    // Kiểm tra nếu là Android
+    // Xử lý cho Android (dùng deep link nếu cần)
     if (/android/i.test(userAgent)) {
-      const deepLink = "shopee://product/1024077830/17397941748";
+      const deepLink = "shopee://product/1024077830/17397941748"; // Thay bằng deep link thực tế nếu có
       console.log("Redirecting to Android deep link:", deepLink);
       return res.redirect(302, deepLink);
     }
 
-    // Nếu là Desktop hoặc các thiết bị khác
+    // Fallback cho các thiết bị khác (Desktop, v.v.)
     console.log("Redirecting to fallback URL:", shopeeUniversalLink);
     return res.redirect(302, shopeeUniversalLink);
 
