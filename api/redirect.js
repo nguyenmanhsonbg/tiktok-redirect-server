@@ -1,6 +1,6 @@
 const { MongoClient } = require("mongodb");
 
-// MongoDB URI (nên ẩn mật khẩu trong biến môi trường khi deploy)
+// MongoDB URI (nên dùng biến môi trường để ẩn thông tin nhạy cảm)
 const uri =
   "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const client = new MongoClient(uri, {
@@ -8,7 +8,6 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
 });
 
-// Singleton cho kết nối MongoDB
 let dbInstance;
 
 async function connectDB() {
@@ -27,11 +26,15 @@ async function connectDB() {
 
 connectDB().catch(console.error);
 
+// Hàm tạo mã định danh ngẫu nhiên
+function generateUniqueId() {
+  return Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+}
+
 // Route redirect
 module.exports = async (req, res) => {
   const { code } = req.query;
 
-  // Kiểm tra tham số bắt buộc
   if (!code) {
     return res.status(400).json({ error: "Short code is required." });
   }
@@ -49,22 +52,34 @@ module.exports = async (req, res) => {
 
     console.log("Product found:", product);
 
-    // Universal Link của Shopee từ bạn cung cấp
-    const shopeeUniversalLink = "https://s.shopee.vn/AKM70LP3Zu";
-    const linkWeb ="https://s.shopee.vn/5KwLskfPZH"
-
-    // Lấy và phân tích user-agent
+    // Lấy User-Agent
     const userAgent = (req.headers["user-agent"] || "").toLowerCase();
 
-    // Xử lý khi Facebook bot truy cập (trả về HTML cho Open Graph)
+    // Tạo mã định danh duy nhất cho mỗi yêu cầu
+    const uniqueId = generateUniqueId();
+
+    // Danh sách các Universal Link khác nhau (có thể lấy từ DB hoặc hardcode tạm thời)
+    const shopeeLinks =   "https://s.shopee.vn/AKM70LP3Zu"
+    const shopeeLinks1 = "https://s.shopee.vn/5KwLskfPZH"
+
+    // Thêm tham số động để tránh cache
+    const dynamicLink = `${shopeeLinks}?uid=${uniqueId}`;
+    const dynamicLink1 = `${shopeeLinks1}?uid=${uniqueId}`;
+
+    // Thiết lập header để ngăn cache
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+
+    // Xử lý khi Facebook bot truy cập
     if (/facebookexternalhit/i.test(userAgent)) {
       return res.send(`
         <html>
           <head>
             <meta property="og:title" content="Khám phá sản phẩm hot trên Shopee!">
             <meta property="og:description" content="Mở Shopee ngay để xem sản phẩm này!">
-            <meta property="og:url" content="${shopeeUniversalLink}">
-            <meta http-equiv="refresh" content="0;url=${shopeeUniversalLink}">
+            <meta property="og:url" content="${dynamicLink}">
+            <meta http-equiv="refresh" content="0;url=${dynamicLink}">
           </head>
           <body>
             <p>Đang chuyển hướng đến Shopee...</p>
@@ -75,32 +90,31 @@ module.exports = async (req, res) => {
 
     // Xử lý cho iOS (bao gồm Facebook WebView)
     if (/iphone|ipad|ipod/i.test(userAgent)) {
-      // Trả về HTML với redirect tự động để vượt qua WebView
       return res.send(`
-         <html>
+        <html>
           <head>
-            <meta http-equiv="refresh" content="0;url=${shopeeUniversalLink}">
+            <meta http-equiv="refresh" content="0;url=${dynamicLink}">
           </head>
           <body>
             <p>Đang chuyển hướng đến Shopee...</p>
             <script>
-              window.location.href = "${shopeeUniversalLink}";
+              window.location.href = "${dynamicLink}";
             </script>
           </body>
         </html>
       `);
     }
 
-    // Xử lý cho Android (dùng deep link nếu cần)
+    // Xử lý cho Android
     if (/android/i.test(userAgent)) {
       const deepLink = "shopee://product/1024077830/17397941748"; // Thay bằng deep link thực tế nếu có
       console.log("Redirecting to Android deep link:", deepLink);
       return res.redirect(302, deepLink);
     }
 
-    // Fallback cho các thiết bị khác (Desktop, v.v.)
-    console.log("Redirecting to fallback URL:", shopeeUniversalLink);
-    return res.redirect(302, linkWeb);
+    // Fallback cho các thiết bị khác
+
+    return res.redirect(302, dynamicLink1);
 
   } catch (error) {
     console.error("Error handling request:", error);
