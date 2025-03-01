@@ -63,8 +63,8 @@ module.exports = async (req, res) => {
           <head>
             <meta property="og:title" content="Khám phá sản phẩm hot trên Shopee!">
             <meta property="og:description" content="Mở Shopee ngay để xem sản phẩm này!">
-            // <meta property="og:url" content="${shopeeUniversalLink}">
-            // <meta http-equiv="refresh" content="0;url=${shopeeUniversalLink}">
+            <meta property="og:url" content="${shopeeUniversalLink}">
+            <meta http-equiv="refresh" content="0;url=${shopeeUniversalLink}">
           </head>
           <body>
             <p>Đang chuyển hướng đến Shopee...</p>
