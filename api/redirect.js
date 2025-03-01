@@ -69,7 +69,6 @@ module.exports = async (req, res) => {
           <head>
             <meta property="og:title" content="Khám phá sản phẩm hot!">
             <meta property="og:description" content="Mở Shopee ngay để xem sản phẩm này!">
-            <meta property="og:url" content="${shopeeUniversalLink}">
           </head>
           <body>
             <p>Bấm vào đường link để xem sản phẩm trên Shopee.</p>
@@ -80,19 +79,7 @@ module.exports = async (req, res) => {
 
     // Kiểm tra nếu là iOS
     if (/iphone|ipad|ipod/i.test(userAgent)) {
-      const filePath = path.join(__dirname, "../public/redirect.html");
-      if (fs.existsSync(filePath)) {
-        fs.readFile(filePath, "utf8", (err, data) => {
-          if (err) {
-            console.error("Error reading redirect.html:", err);
-            return res.status(500).json({ error: "Failed to serve redirect.html" });
-          }
-          res.setHeader("Content-Type", "text/html");
-          res.send(data);
-        });
-      } else {
-        return res.status(404).json({ error: "Redirect file not found" });
-      }
+      return res.redirect(302, shopeeUniversalLink);
     }
 
     // Kiểm tra nếu là Android
