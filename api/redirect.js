@@ -82,11 +82,22 @@ module.exports = async (req, res) => {
           <head>
             <meta charset="utf-8">
             <title>Đang mở Shopee...</title>
-            <meta http-equiv="refresh" content="0; url=${shopeeUniversalLink}">
             <script>
-              setTimeout(() => {
-                window.location.href = "${shopeeUniversalLink}";
-              }, 100);
+              function openShopee() {
+                let shopeeUrl = "${shopeeUniversalLink}";
+                let fallbackUrl = "https://shopee.vn/";
+      
+                let now = Date.now();
+                window.location.href = shopeeUrl;
+      
+                setTimeout(() => {
+                  if (Date.now() - now < 1500) {
+                    window.location.href = fallbackUrl;
+                  }
+                }, 1000);
+              }
+      
+              openShopee();
             </script>
           </head>
           <body>
