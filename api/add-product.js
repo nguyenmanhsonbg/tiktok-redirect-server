@@ -1,12 +1,9 @@
-const { MongoClient } = require("mongodb");
+const connectDB = require("../connectDB");
 const crypto = require("crypto");
 const axios = require("axios");
 
-const uri =
-  "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Use environment variable for MongoDB connection
-const client = new MongoClient(uri);
-
 module.exports = async (req, res) => {
+  const db = await connectDB();
   const { webLink1, webLink2 } = req.body;
 
   // Validate input fields
@@ -43,8 +40,6 @@ module.exports = async (req, res) => {
       return crypto.randomBytes(4).toString("hex");
     };
 
-    await client.connect();
-    const db = client.db("productDatabase");
     const productsCollection = db.collection("products");
 
     let shortCode;
