@@ -1,8 +1,15 @@
 const connectDB = require("../connectDB"); // Import kết nối MongoDB
+let redirectCache = {}; // Cache URL
 
 module.exports = async (req, res) => {
   const { code } = req.query;
   if (!code) return res.status(400).json({ error: "Short code is required." });
+
+  // Kiểm tra cache trước
+  if (redirectCache[code]) {
+    console.log("✅ Cache hit:", code);
+    return res.redirect(302, redirectCache[code]);
+  }
 
   try {
     const db = await connectDB(); // Gọi hàm kết nối
@@ -10,6 +17,8 @@ module.exports = async (req, res) => {
 
     const product = await productsCollection.findOne({ shortCode: code });
     if (!product) return res.status(404).json({ error: "Product not found." });
+    // Lưu vào cache để dùng lại
+    redirectCache[code] = linkWeb;
 
     const shopeeUniversalLink = "https://s.shopee.vn/7zx4gJh1C3";
     const linkWeb = "https://s.shopee.vn/5KwLskfPZH";
