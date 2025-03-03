@@ -20,8 +20,8 @@ module.exports = async (req, res) => {
     // Lưu vào cache để dùng lại
     // redirectCache[code] = linkWeb;
 
-    const shopeeUniversalLink = product.deepLink;
-    const linkWeb = product.webLink1;
+    const shopeeUniversalLink = product.webLink1;
+    const linkWeb = product.deepLink;
 
     const userAgent = (req.headers["user-agent"] || "").toLowerCase();
 
