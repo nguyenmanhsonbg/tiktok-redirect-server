@@ -47,11 +47,10 @@ module.exports = async (req, res) => {
       return res.status(404).json({ error: "Product not found." });
     }
 
-    console.log("Product found:", product);
 
     // Universal Link của Shopee từ bạn cung cấp
-    const shopeeUniversalLink = "https://s.shopee.vn/7zx4gJh1C3";
-    const linkWeb ="https://s.shopee.vn/5KwLskfPZH"
+    const shopeeUniversalLink = product.deepLink;
+    const linkWeb = product.webLink1;
 
     // Lấy và phân tích user-agent
     const userAgent = (req.headers["user-agent"] || "").toLowerCase();
