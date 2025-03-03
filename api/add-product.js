@@ -2,7 +2,8 @@ const { MongoClient } = require("mongodb");
 const crypto = require("crypto");
 const axios = require("axios");
 
-const uri = "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Use environment variable for MongoDB connection
+const uri =
+  "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Use environment variable for MongoDB connection
 const client = new MongoClient(uri);
 
 module.exports = async (req, res) => {
@@ -16,7 +17,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-   // Resolve the shortened link (webLink2) to its final redirect URL
+    // Resolve the shortened link (webLink2) to its final redirect URL
     const response = await axios.get(webLink2, { maxRedirects: 5 });
     const resolvedLink = response.request.res.responseUrl;
 
@@ -24,7 +25,8 @@ module.exports = async (req, res) => {
     const match = resolvedLink.match(/\/product\/(\d+)\/(\d+)/);
     if (!match) {
       return res.status(400).json({
-        error: "Invalid resolved link format. Ensure it follows the format 'https://shopee.vn/product/<shopId>/<productId>'.",
+        error:
+          "Invalid resolved link format. Ensure it follows the format 'https://shopee.vn/product/<shopId>/<productId>'.",
       });
     }
 
@@ -38,7 +40,7 @@ module.exports = async (req, res) => {
 
     // // Function to generate a random short code
     const generateShortCode = () => {
-      return crypto.randomBytes(4).toString("hex"); 
+      return crypto.randomBytes(4).toString("hex");
     };
 
     await client.connect();
@@ -58,7 +60,7 @@ module.exports = async (req, res) => {
     }
 
     // Create a new product entry
-    const newProduct = { shortCode, deepLink, webLink1};
+    const newProduct = { shortCode, deepLink, webLink1 };
 
     // Insert the new product into MongoDB
     const result = await productsCollection.insertOne(newProduct);
