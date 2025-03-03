@@ -1,61 +1,30 @@
-const { MongoClient } = require("mongodb");
+const connectDB = require("../connectDB"); // Import kết nối MongoDB
+let redirectCache = {}; // Cache URL
 
-// MongoDB URI (nên ẩn mật khẩu trong biến môi trường khi deploy)
-const uri =
-  "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-// Singleton cho kết nối MongoDB
-let dbInstance;
-
-async function connectDB() {
-  if (!dbInstance) {
-    try {
-      await client.connect();
-      dbInstance = client.db("productDatabase");
-      console.log("Connected to MongoDB");
-    } catch (error) {
-      console.error("MongoDB connection error:", error);
-      throw error;
-    }
-  }
-  return dbInstance;
-}
-
-connectDB().catch(console.error);
-
-// Route redirect
 module.exports = async (req, res) => {
   const { code } = req.query;
+  if (!code) return res.status(400).json({ error: "Short code is required." });
 
-  // Kiểm tra tham số bắt buộc
-  if (!code) {
-    return res.status(400).json({ error: "Short code is required." });
+  // Kiểm tra cache trước
+  if (redirectCache[code]) {
+    console.log("✅ Cache hit:", code);
+    return res.redirect(302, redirectCache[code]);
   }
 
   try {
-    const db = await connectDB();
+    const db = await connectDB(); // Gọi hàm kết nối
     const productsCollection = db.collection("products");
 
-    // Tìm sản phẩm trong MongoDB
     const product = await productsCollection.findOne({ shortCode: code });
+    if (!product) return res.status(404).json({ error: "Product not found." });
+    // Lưu vào cache để dùng lại
+    redirectCache[code] = linkWeb;
 
-    if (!product) {
-      return res.status(404).json({ error: "Product not found." });
-    }
+    const shopeeUniversalLink = "https://s.shopee.vn/7zx4gJh1C3";
+    const linkWeb = "https://s.shopee.vn/5KwLskfPZH";
 
-
-    // Universal Link của Shopee từ bạn cung cấp
-    const shopeeUniversalLink = product.deepLink;
-    const linkWeb = product.webLink1;
-
-    // Lấy và phân tích user-agent
     const userAgent = (req.headers["user-agent"] || "").toLowerCase();
 
-    // Xử lý khi Facebook bot truy cập (trả về HTML cho Open Graph)
     if (/facebookexternalhit/i.test(userAgent)) {
       return res.send(`
         <html>
@@ -72,34 +41,23 @@ module.exports = async (req, res) => {
       `);
     }
 
-    // Xử lý cho iOS (bao gồm Facebook WebView)
     if (/iphone|ipad|ipod/i.test(userAgent)) {
-      // Trả về HTML với redirect tự động để vượt qua WebView
       return res.send(`
-         <html>
+        <html>
           <head>
             <meta http-equiv="refresh" content="0;url=${shopeeUniversalLink}">
           </head>
           <body>
             <p>Đang chuyển hướng đến Shopee...</p>
-            <script>
-              window.location.href = "${shopeeUniversalLink}";
-            </script>
+            <script>window.location.href = "${shopeeUniversalLink}";</script>
           </body>
         </html>
       `);
     }
 
     return res.redirect(302, linkWeb);
-
   } catch (error) {
     console.error("Error handling request:", error);
     return res.status(500).json({ error: "Internal server error." });
   }
 };
-
-// Đóng kết nối MongoDB khi ứng dụng kết thúc
-process.on("SIGTERM", async () => {
-  await client.close();
-  console.log("MongoDB connection closed");
-});

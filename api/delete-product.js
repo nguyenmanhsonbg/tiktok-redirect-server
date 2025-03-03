@@ -1,7 +1,4 @@
-const { MongoClient } = require("mongodb");
-
-const uri = "mongodb+srv://manhnguyen3122:Manh031220@cluster0.rq4vw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; 
-const client = new MongoClient(uri);
+const connectDB = require("../connectDB");
 
 module.exports = async (req, res) => {
   if (req.method !== "DELETE") {
@@ -15,12 +12,9 @@ module.exports = async (req, res) => {
   }
 
   try {
-    await client.connect();
-    const db = client.db("productDatabase");
+    const db = await connectDB();
     const productsCollection = db.collection("products");
-
     const result = await productsCollection.deleteOne({ shortCode: code });
-
     if (result.deletedCount === 0) {
       return res.status(404).json({ error: "Product not found." });
     }
