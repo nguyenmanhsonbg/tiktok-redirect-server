@@ -1,5 +1,5 @@
 const connectDB = require("../connectDB"); // Import kết nối MongoDB
-let redirectCache = {}; // Cache URL
+// let redirectCache = {}; // Cache URL
 
 module.exports = async (req, res) => {
   const { code } = req.query;
@@ -18,10 +18,10 @@ module.exports = async (req, res) => {
     const product = await productsCollection.findOne({ shortCode: code });
     if (!product) return res.status(404).json({ error: "Product not found." });
     // Lưu vào cache để dùng lại
-    redirectCache[code] = linkWeb;
+    // redirectCache[code] = linkWeb;
 
-    const shopeeUniversalLink = "https://s.shopee.vn/7zx4gJh1C3";
-    const linkWeb = "https://s.shopee.vn/5KwLskfPZH";
+    const shopeeUniversalLink = product.deepLink;
+    const linkWeb = product.webLink1;
 
     const userAgent = (req.headers["user-agent"] || "").toLowerCase();
 
