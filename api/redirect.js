@@ -6,10 +6,10 @@ module.exports = async (req, res) => {
   if (!code) return res.status(400).json({ error: "Short code is required." });
 
   // Kiểm tra cache trước
-  if (redirectCache[code]) {
-    console.log("✅ Cache hit:", code);
-    return res.redirect(302, redirectCache[code]);
-  }
+  // if (redirectCache[code]) {
+  //   console.log("✅ Cache hit:", code);
+  //   return res.redirect(302, redirectCache[code]);
+  // }
 
   try {
     const db = await connectDB(); // Gọi hàm kết nối
