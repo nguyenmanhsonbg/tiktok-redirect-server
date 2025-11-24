@@ -18,13 +18,11 @@ const logoutButton = document.getElementById("logoutButton");
 // Check login state on page load
 window.onload = async () => {
   if (localStorage.getItem("isLoggedIn") === "true") {
-    // If user is logged in, show the dashboard
     loginModal.style.display = "none";
     mainContainer.style.display = "block";
     logoutButton.style.display = "inline-block";
     await loadProductList();
   } else {
-    // Show login modal if not logged in
     loginModal.style.display = "flex";
     mainContainer.style.display = "none";
     logoutButton.style.display = "none";
@@ -35,22 +33,17 @@ window.onload = async () => {
 loginForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  // Get user input
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
 
-  // Validate credentials
   if (username === defaultUsername && password === defaultPassword) {
-    // Store login state in localStorage
     localStorage.setItem("isLoggedIn", "true");
 
-    // Hide the modal and show the main container
     loginModal.style.display = "none";
     mainContainer.style.display = "block";
     logoutButton.style.display = "inline-block";
     loadProductList();
   } else {
-    // Show error message for invalid credentials
     loginError.style.display = "block";
   }
 });
@@ -59,12 +52,10 @@ loginForm.addEventListener("submit", (e) => {
 addProductForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // Get product details from form
   const webLink1 = document.getElementById("webLink1").value;
   const webLink2 = document.getElementById("webLink2").value;
 
   try {
-    // Send POST request to add product
     const response = await fetch(ADD_PRODUCT_API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -73,11 +64,11 @@ addProductForm.addEventListener("submit", async (e) => {
 
     if (response.ok) {
       alert("Product added successfully!");
-      loadProductList(); // Reload the product list
-      addProductForm.reset(); // Clear the form
+      await loadProductList();
+      addProductForm.reset();
     } else {
-      const error = await response.json();
-      alert(`Error: ${error.error}`);
+      const error = await response.json().catch(() => ({}));
+      alert(`Error: ${error.error || "Failed to add product."}`);
     }
   } catch (error) {
     console.error("Failed to add product:", error);
@@ -90,38 +81,57 @@ logoutButton.addEventListener("click", logout);
 
 // Logout function
 function logout() {
-  // Clear login state
   localStorage.removeItem("isLoggedIn");
 
-  // Hide the main container and show the login modal
   mainContainer.style.display = "none";
   logoutButton.style.display = "none";
   loginModal.style.display = "flex";
 }
 
 // Load product list from the backend
-// Load product list from the backend
 async function loadProductList() {
   try {
     const response = await fetch(GET_PRODUCTS_API);
+
+    if (!response.ok) {
+      const errBody = await response.json().catch(() => ({}));
+      console.error("Error from get-products API:", errBody);
+      alert(`Error loading product list: ${errBody.error || "Unknown error"}`);
+      return;
+    }
+
     const products = await response.json();
 
-    // Clear existing rows in the table
+    if (!Array.isArray(products)) {
+      console.error("Unexpected products response:", products);
+      alert("Invalid product data received from server.");
+      return;
+    }
+
+    // Clear existing rows
     productList.innerHTML = "";
 
-    // Populate the table with products
+    // Populate the table with products from Google Sheet
     products.forEach((product) => {
+      // Expecting fields: id, web_link, deep_link, short_code
+      const id = product.id || "";
+      const deepLink = product.deep_link || "";
+      const webLink = product.web_link || "";
+      const shortCode = product.short_code || "";
+
       const row = document.createElement("tr");
 
       row.innerHTML = `
-        <td>${product._id}</td>
-        <td><a href="${product.deepLink}" target="_blank">${product.deepLink}</a></td>
-        <td><a href="${product.webLink1}" target="_blank">${product.webLink1}</a></td>
-        <td>${product.shortCode}</td>
+        <td>${id}</td>
+        <td><a href="${deepLink}" target="_blank" rel="noopener noreferrer">${deepLink}</a></td>
+        <td><a href="${webLink}" target="_blank" rel="noopener noreferrer">${webLink}</a></td>
+        <td>${shortCode}</td>
         <td class="actions">
-          <button onclick="copyToClipboard('${product.shortCode}')">Copy code</button>
-          <button onclick="deleteProduct('${product.shortCode}')">Delete</button>
-          <button onclick="copyToClipboard('https://tiktok-redirect-server.vercel.app/api/redirect?code=${product.shortCode}')">Copy Link</button>
+          <button onclick="copyToClipboard('${shortCode}')">Copy code</button>
+          <button onclick="deleteProduct('${shortCode}')">Delete</button>
+          <button onclick="copyToClipboard('https://tiktok-redirect-server.vercel.app/api/redirect?code=${encodeURIComponent(
+            shortCode
+          )}')">Copy Link</button>
         </td>
       `;
 
@@ -133,12 +143,11 @@ async function loadProductList() {
   }
 }
 
-
-// Copy short code to clipboard
+// Copy text to clipboard
 function copyToClipboard(text) {
   navigator.clipboard.writeText(text).then(
-    () => alert("Short code copied to clipboard!"),
-    () => alert("Failed to copy short code.")
+    () => alert("Copied to clipboard!"),
+    () => alert("Failed to copy.")
   );
 }
 
@@ -147,16 +156,16 @@ async function deleteProduct(shortCode) {
   if (!confirm("Are you sure you want to delete this product?")) return;
 
   try {
-    const response = await fetch(`${DELETE_PRODUCT_API}?code=${shortCode}`, {
+    const response = await fetch(`${DELETE_PRODUCT_API}?code=${encodeURIComponent(shortCode)}`, {
       method: "DELETE",
     });
 
     if (response.ok) {
       alert("Product deleted successfully!");
-      loadProductList(); // Reload the product list
+      await loadProductList();
     } else {
-      const error = await response.json();
-      alert(`Error: ${error.error}`);
+      const error = await response.json().catch(() => ({}));
+      alert(`Error: ${error.error || "Failed to delete product."}`);
     }
   } catch (error) {
     console.error("Failed to delete product:", error);
