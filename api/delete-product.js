@@ -1,4 +1,9 @@
-const connectDB = require("../connectDB");
+// delete-product.js
+
+const axios = require("axios");
+
+const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbykx1Ou6aZgFFIngX1EO14liFHE9wJ_y8ScRKDRiCAzznQEzgZPLp3vb5q2Jre0k4qs/exec";
+
 
 module.exports = async (req, res) => {
   if (req.method !== "DELETE") {
@@ -11,19 +16,43 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: "Short code is required." });
   }
 
+  if (!GOOGLE_SHEET_API_URL) {
+    console.error("GOOGLE_SHEET_API_URL is not set");
+    return res
+      .status(500)
+      .json({ error: "Server misconfiguration: missing Google Sheet API URL." });
+  }
+
   try {
-    const db = await connectDB();
-    const productsCollection = db.collection("products");
-    const result = await productsCollection.deleteOne({ shortCode: code });
-    if (result.deletedCount === 0) {
+    // Our Apps Script "delete" expects: { action: "delete", id: "<short_code>" }
+    const payload = {
+      action: "delete",
+      id: code, // we treat short code as the id in the sheet
+    };
+
+    const gsResp = await axios.post(GOOGLE_SHEET_API_URL, payload, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const body = gsResp.data || {};
+
+    if (body.success === true) {
+      return res
+        .status(200)
+        .json({ message: "Product deleted successfully." });
+    }
+
+    if (body.code === 404) {
       return res.status(404).json({ error: "Product not found." });
     }
 
-    res.status(200).json({ message: "Product deleted successfully." });
+    console.error("Unexpected delete response from Google Sheet API:", body);
+    return res.status(502).json({
+      error: "Failed to delete product via Google Sheet API.",
+      details: body,
+    });
   } catch (error) {
-    console.error("Error deleting product:", error);
-    res.status(500).json({ error: "Failed to delete product." });
-  } finally {
-    await client.close();
+    console.error("Error deleting product:", error.message || error);
+    return res.status(500).json({ error: "Failed to delete product." });
   }
 };
