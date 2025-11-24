@@ -128,7 +128,7 @@ async function loadProductList() {
         <td>${shortCode}</td>
         <td class="actions">
           <button onclick="copyToClipboard('${shortCode}')">Copy code</button>
-          <button onclick="deleteProduct('${shortCode}')">Delete</button>
+          <button onclick="deleteProduct('${id}')">Delete</button>
           <button onclick="copyToClipboard('https://tiktok-redirect-server.vercel.app/api/redirect?code=${encodeURIComponent(
             shortCode
           )}')">Copy Link</button>
