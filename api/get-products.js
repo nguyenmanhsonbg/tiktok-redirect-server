@@ -6,6 +6,17 @@
 const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbykx1Ou6aZgFFIngX1EO14liFHE9wJ_y8ScRKDRiCAzznQEzgZPLp3vb5q2Jre0k4qs/exec";
 
 module.exports = async (req, res) => {
+
+    // CORS headers
+  res.setHeader("Access-Control-Allow-Origin", "*"); // or specific origin
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  // Preflight request
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+  
   try {
     if (!GOOGLE_SHEET_API_URL) {
       console.error("GOOGLE_SHEET_API_URL is not set");
