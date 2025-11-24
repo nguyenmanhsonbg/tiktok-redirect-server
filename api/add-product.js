@@ -48,12 +48,12 @@ module.exports = async (req, res) => {
 
     // 2. Extract shopId and productId from the resolved link
     const match = resolvedLink.match(/\/product\/(\d+)\/(\d+)/);
-    if (!match) {
-      return res.status(400).json({
-        error:
-          "Invalid resolved link format. Ensure it follows the format 'https://shopee.vn/product/<shopId>/<productId>'.",
-      });
-    }
+    // if (!match) {
+    //   return res.status(400).json({
+    //     error:
+    //       "Invalid resolved link format. Ensure it follows the format 'https://shopee.vn/product/<shopId>/<productId>'.",
+    //   });
+    // }
 
     const shopId = match[1];
     const productId = match[2];
