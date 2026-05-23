@@ -1,18 +1,15 @@
-// delete-product.js
-
-const axios = require("axios");
-
-const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbykx1Ou6aZgFFIngX1EO14liFHE9wJ_y8ScRKDRiCAzznQEzgZPLp3vb5q2Jre0k4qs/exec";
-
+const { query } = require("../lib/db");
+const { setCorsHeaders } = require("../lib/http");
 
 module.exports = async (req, res) => {
-
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  setCorsHeaders(res);
 
   if (req.method === "OPTIONS") {
     return res.status(200).end();
+  }
+
+  if (req.method !== "DELETE") {
+    return res.status(405).json({ error: "Method not allowed." });
   }
 
   const { code } = req.query;
@@ -21,43 +18,23 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: "Short code is required." });
   }
 
-  if (!GOOGLE_SHEET_API_URL) {
-    console.error("GOOGLE_SHEET_API_URL is not set");
-    return res
-      .status(500)
-      .json({ error: "Server misconfiguration: missing Google Sheet API URL." });
-  }
-
   try {
-    // Our Apps Script "delete" expects: { action: "delete", id: "<short_code>" }
-    const payload = {
-      action: "delete",
-      id: code, // we treat short code as the id in the sheet
-    };
+    const result = await query(
+      `
+        DELETE FROM products
+        WHERE short_code = $1 OR id = $1
+        RETURNING id
+      `,
+      [code]
+    );
 
-    const gsResp = await axios.post(GOOGLE_SHEET_API_URL, payload, {
-      headers: { "Content-Type": "application/json" },
-    });
-
-    const body = gsResp.data || {};
-
-    if (body.success === true) {
-      return res
-        .status(200)
-        .json({ message: "Product deleted successfully." });
-    }
-
-    if (body.code === 404) {
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: "Product not found." });
     }
 
-    console.error("Unexpected delete response from Google Sheet API:", body);
-    return res.status(502).json({
-      error: "Failed to delete product via Google Sheet API.",
-      details: body,
-    });
+    return res.status(200).json({ message: "Product deleted successfully." });
   } catch (error) {
-    console.error("Error deleting product:", error.message || error);
+    console.error("Error deleting product from database:", error);
     return res.status(500).json({ error: "Failed to delete product." });
   }
 };
