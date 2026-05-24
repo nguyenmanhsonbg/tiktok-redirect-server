@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { query } = require("../lib/db");
+const { clearProductsCache } = require("./get-products");
 const { readJsonBody, setCorsHeaders } = require("../lib/http");
 
 const MAX_SHORT_CODE_ATTEMPTS = 5;
@@ -50,6 +51,7 @@ module.exports = async (req, res) => {
         );
 
         const product = result.rows[0];
+        clearProductsCache();
 
         return res.status(201).json({
           message: "Product added successfully.",

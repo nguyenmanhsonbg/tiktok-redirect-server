@@ -1,4 +1,9 @@
 const { query } = require("../lib/db");
+const { getCacheValue, getNumberEnv, setCacheValue } = require("../lib/cache");
+
+function getRedirectCacheTtlMs() {
+  return getNumberEnv("REDIRECT_CACHE_TTL_MS", 300000);
+}
 
 function escapeHtmlAttribute(value) {
   return String(value)
@@ -32,21 +37,28 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const result = await query(
-      `
-        SELECT id, web_link, deep_link, short_code
-        FROM products
-        WHERE short_code = $1 OR id = $1
-        LIMIT 1
-      `,
-      [code]
-    );
+    const cacheKey = String(code);
+    let product = getCacheValue("redirects", cacheKey);
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Product not found." });
+    if (!product) {
+      const result = await query(
+        `
+          SELECT id, web_link, deep_link, short_code
+          FROM products
+          WHERE short_code = $1
+          LIMIT 1
+        `,
+        [code]
+      );
+
+      if (result.rowCount === 0) {
+        return res.status(404).json({ error: "Product not found." });
+      }
+
+      product = result.rows[0];
+      setCacheValue("redirects", cacheKey, product, getRedirectCacheTtlMs());
     }
 
-    const product = result.rows[0];
     const universalLink = product.web_link || "";
     const targetLink = product.deep_link || "";
 

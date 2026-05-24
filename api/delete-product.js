@@ -1,4 +1,6 @@
 const { query } = require("../lib/db");
+const { deleteCacheValue } = require("../lib/cache");
+const { clearProductsCache } = require("./get-products");
 const { setCorsHeaders } = require("../lib/http");
 
 module.exports = async (req, res) => {
@@ -22,7 +24,7 @@ module.exports = async (req, res) => {
     const result = await query(
       `
         DELETE FROM products
-        WHERE short_code = $1 OR id = $1
+        WHERE short_code = $1
         RETURNING id
       `,
       [code]
@@ -31,6 +33,9 @@ module.exports = async (req, res) => {
     if (result.rowCount === 0) {
       return res.status(404).json({ error: "Product not found." });
     }
+
+    clearProductsCache();
+    deleteCacheValue("redirects", code);
 
     return res.status(200).json({ message: "Product deleted successfully." });
   } catch (error) {
