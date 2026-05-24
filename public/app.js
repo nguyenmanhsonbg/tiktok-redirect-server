@@ -1,6 +1,6 @@
-const GET_PRODUCTS_API = "https://tiktok-redirect-server.vercel.app/api/get-products";
-const ADD_PRODUCT_API = "https://tiktok-redirect-server.vercel.app/api/add-product";
-const DELETE_PRODUCT_API = "https://tiktok-redirect-server.vercel.app/api/delete-product";
+const GET_PRODUCTS_API = "/api/get-products";
+const ADD_PRODUCT_API = "/api/add-product";
+const DELETE_PRODUCT_API = "/api/delete-product";
 
 // Default credentials
 const defaultUsername = "admin";
@@ -129,7 +129,7 @@ async function loadProductList() {
         <td class="actions">
           <button onclick="copyToClipboard('${shortCode}')">Copy code</button>
           <button onclick="deleteProduct('${id}')">Delete</button>
-          <button onclick="copyToClipboard('https://tiktok-redirect-server.vercel.app/api/redirect?code=${encodeURIComponent(
+          <button onclick="copyToClipboard('${window.location.origin}/api/redirect?code=${encodeURIComponent(
             shortCode
           )}')">Copy Link</button>
         </td>
