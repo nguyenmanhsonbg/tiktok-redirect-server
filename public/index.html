@@ -1,129 +1,126 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Product Dashboard</title>
-    <button
-      id="logoutButton"
-      style="float: right; margin-bottom: 20px; display: none"
-    >
-      Đăng xuất
-    </button>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-        padding: 0;
-        background-color: #f9f9f9;
-      }
-      h1 {
-        text-align: center;
-        color: #333;
-      }
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        background: #fff;
-        padding: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-      }
-      form {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-      form input,
-      button {
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-      }
-      button {
-        background-color: #ff7b33;
-        color: white;
-        cursor: pointer;
-      }
-      button:hover {
-        background-color: #f55905;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-      }
-      table th,
-      table td {
-        padding: 10px;
-        border: 1px solid #ddd;
-        text-align: left;
-      }
-      table th {
-        background-color: #f4f4f4;
-      }
-      .actions button {
-        margin-right: 5px;
-      }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="container" style="display: none">
-      <h1>Product Dashboard</h1>
-      <section>
-        <h2>Thêm sản phẩm mới</h2>
-        <form id="add-product-form">
-          <input type="text" id="webLink1" placeholder="Enter Web link" required />
-          <input
-            type="text"
-            id="webLink2"
-            placeholder="Enter Phone link"
-            required
-          />
-          <button type="submit">Thêm sản phẩm</button>
-        </form>
-      </section>
-      <section>
-        <h2>Danh sách sản phẩm</h2>
-        <div style="overflow-x: auto;">
-          <!-- Enable horizontal scrolling for small screens -->
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Deep Link</th>
-                <th>Web Link</th>
-                <th>Short Code</th>
-                <th>Hành động</th>
-              </tr>
-            </thead>
-            <tbody id="product-list">
-              <!-- Rows will be dynamically added here -->
-            </tbody>
-          </table>
-        </div>
-      </section>
-      
-    </div>
+    <main class="page-shell">
+      <div class="container dashboard-shell" style="display: none">
+        <header class="dashboard-header">
+          <div>
+            <p class="eyebrow">Product links</p>
+            <h1>Product Dashboard</h1>
+            <p class="dashboard-subtitle">
+              Quản lý và tạo liên kết sản phẩm
+            </p>
+          </div>
+          <button id="logoutButton" class="button button-neutral" type="button">
+            Đăng xuất
+          </button>
+        </header>
+
+        <section class="panel add-product-panel" aria-labelledby="add-product-title">
+          <div class="section-header">
+            <div>
+              <h2 id="add-product-title">Thêm sản phẩm mới</h2>
+              <p>Nhập link web và link mở trên điện thoại cho sản phẩm.</p>
+            </div>
+          </div>
+
+          <form id="add-product-form" class="product-form">
+            <label class="field">
+              <span>Web Link</span>
+              <input
+                type="text"
+                id="webLink1"
+                placeholder="https://example.com/product"
+                required
+              />
+            </label>
+
+            <label class="field">
+              <span>Phone Link / Deep Link</span>
+              <input
+                type="text"
+                id="webLink2"
+                placeholder="app://product hoặc https://..."
+                required
+              />
+            </label>
+
+            <button class="button button-primary add-product-button" type="submit">
+              Thêm sản phẩm
+            </button>
+          </form>
+        </section>
+
+        <section class="panel product-list-panel" aria-labelledby="product-list-title">
+          <div class="section-header product-list-header">
+            <div>
+              <h2 id="product-list-title">Danh sách sản phẩm</h2>
+              <p>Theo dõi short code và liên kết redirect đã tạo.</p>
+            </div>
+            <span id="product-count" class="product-count">0 sản phẩm</span>
+          </div>
+
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Deep Link</th>
+                  <th>Web Link</th>
+                  <th>Short Code</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="product-list">
+                <!-- Rows will be dynamically added here -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
     <div id="loginModal" class="modal">
       <div class="modal-content">
         <h2>Đăng nhập</h2>
-        <form id="loginForm">
-          <label for="username">Tên đăng nhập:</label>
-          <input
-            type="text"
-            id="username"
-            placeholder="Enter username"
-            required
-          />
-          <label for="password">Mật khẩu:</label>
-          <input
-            type="password"
-            id="password"
-            placeholder="Enter password"
-            required
-          />
-          <button type="submit">Đăng nhập</button>
+        <p class="modal-subtitle">Truy cập bảng quản trị liên kết sản phẩm.</p>
+        <form id="loginForm" class="login-form">
+          <label class="field" for="username">
+            <span>Tên đăng nhập</span>
+            <input
+              type="text"
+              id="username"
+              placeholder="Nhập tên đăng nhập"
+              required
+            />
+          </label>
+
+          <label class="field" for="password">
+            <span>Mật khẩu</span>
+            <input
+              type="password"
+              id="password"
+              placeholder="Nhập mật khẩu"
+              required
+            />
+          </label>
+
+          <button class="button button-primary login-button" type="submit">
+            Đăng nhập
+          </button>
+          <p id="loginError">Tên đăng nhập hoặc mật khẩu không đúng.</p>
         </form>
       </div>
     </div>

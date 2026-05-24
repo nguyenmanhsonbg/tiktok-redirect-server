@@ -12,6 +12,7 @@ const mainContainer = document.querySelector(".container");
 const loginForm = document.getElementById("loginForm");
 const loginError = document.getElementById("loginError");
 const productList = document.getElementById("product-list");
+const productCount = document.getElementById("product-count");
 const addProductForm = document.getElementById("add-product-form");
 const logoutButton = document.getElementById("logoutButton");
 
@@ -111,7 +112,11 @@ async function loadProductList() {
     // Clear existing rows
     productList.innerHTML = "";
 
-    // Populate the table with products from Google Sheet
+    if (productCount) {
+      productCount.textContent = `${products.length} sản phẩm`;
+    }
+
+    // Populate the table with products from the backend
     products.forEach((product) => {
       // Expecting fields: id, web_link, deep_link, short_code
       const id = product.id || "";
@@ -128,7 +133,7 @@ async function loadProductList() {
         <td>${shortCode}</td>
         <td class="actions">
           <button onclick="copyToClipboard('${shortCode}')">Copy code</button>
-          <button onclick="deleteProduct('${id}')">Delete</button>
+          <button class="button-danger" onclick="deleteProduct('${id}')">Delete</button>
           <button onclick="copyToClipboard('${window.location.origin}/api/redirect?code=${encodeURIComponent(
             shortCode
           )}')">Copy Link</button>
