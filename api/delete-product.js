@@ -1,7 +1,9 @@
 const { query } = require("../lib/db");
-const { deleteCacheValue } = require("../lib/cache");
-const { clearProductsCache } = require("./get-products");
 const { setCorsHeaders } = require("../lib/http");
+const {
+  removeProductFromCache,
+  restoreProductToCache,
+} = require("../lib/product-cache");
 
 module.exports = async (req, res) => {
   setCorsHeaders(res);
@@ -20,7 +22,15 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: "Short code is required." });
   }
 
+  let removedProduct;
+
   try {
+    removedProduct = removeProductFromCache(code);
+
+    if (!removedProduct) {
+      return res.status(404).json({ error: "Product not found." });
+    }
+
     const result = await query(
       `
         DELETE FROM products
@@ -31,14 +41,15 @@ module.exports = async (req, res) => {
     );
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Product not found." });
+      console.warn(`Product ${code} was deleted from cache but was not found in database.`);
     }
-
-    clearProductsCache();
-    deleteCacheValue("redirects", code);
 
     return res.status(200).json({ message: "Product deleted successfully." });
   } catch (error) {
+    if (removedProduct) {
+      restoreProductToCache(removedProduct.product, removedProduct.index);
+    }
+
     console.error("Error deleting product from database:", error);
     return res.status(500).json({ error: "Failed to delete product." });
   }

@@ -1,9 +1,4 @@
-const { query } = require("../lib/db");
-const { getCacheValue, getNumberEnv, setCacheValue } = require("../lib/cache");
-
-function getRedirectCacheTtlMs() {
-  return getNumberEnv("REDIRECT_CACHE_TTL_MS", 300000);
-}
+const { getProductByCodeFromCache } = require("../lib/product-cache");
 
 function escapeHtmlAttribute(value) {
   return String(value)
@@ -37,26 +32,10 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const cacheKey = String(code);
-    let product = getCacheValue("redirects", cacheKey);
+    const product = getProductByCodeFromCache(code);
 
     if (!product) {
-      const result = await query(
-        `
-          SELECT id, web_link, deep_link, short_code
-          FROM products
-          WHERE short_code = $1
-          LIMIT 1
-        `,
-        [code]
-      );
-
-      if (result.rowCount === 0) {
-        return res.status(404).json({ error: "Product not found." });
-      }
-
-      product = result.rows[0];
-      setCacheValue("redirects", cacheKey, product, getRedirectCacheTtlMs());
+      return res.status(404).json({ error: "Product not found." });
     }
 
     const universalLink = product.web_link || "";

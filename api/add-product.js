@@ -1,7 +1,11 @@
 const crypto = require("crypto");
 const { query } = require("../lib/db");
-const { clearProductsCache } = require("./get-products");
 const { readJsonBody, setCorsHeaders } = require("../lib/http");
+const {
+  addProductToCache,
+  hasProductInCache,
+  removeProductFromCache,
+} = require("../lib/product-cache");
 
 const MAX_SHORT_CODE_ATTEMPTS = 5;
 
@@ -39,19 +43,29 @@ module.exports = async (req, res) => {
   try {
     for (let attempt = 0; attempt < MAX_SHORT_CODE_ATTEMPTS; attempt += 1) {
       const shortCode = generateShortCode();
+      let cached = false;
+      const product = {
+        id: shortCode,
+        web_link: webLink1,
+        deep_link: webLink2,
+        short_code: shortCode,
+      };
 
       try {
-        const result = await query(
+        if (hasProductInCache(shortCode)) {
+          continue;
+        }
+
+        addProductToCache(product);
+        cached = true;
+
+        await query(
           `
             INSERT INTO products (id, web_link, deep_link, short_code)
             VALUES ($1, $2, $3, $4)
-            RETURNING id, web_link, deep_link, short_code
           `,
           [shortCode, webLink1, webLink2, shortCode]
         );
-
-        const product = result.rows[0];
-        clearProductsCache();
 
         return res.status(201).json({
           message: "Product added successfully.",
@@ -63,6 +77,10 @@ module.exports = async (req, res) => {
           },
         });
       } catch (error) {
+        if (cached) {
+          removeProductFromCache(shortCode);
+        }
+
         if (error.code !== "23505") {
           throw error;
         }
