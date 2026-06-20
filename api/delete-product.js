@@ -1,6 +1,7 @@
 const { query } = require("../lib/db");
 const { setCorsHeaders } = require("../lib/http");
 const {
+  ensureProductCacheInitialized,
   removeProductFromCache,
   restoreProductToCache,
 } = require("../lib/product-cache");
@@ -25,6 +26,7 @@ module.exports = async (req, res) => {
   let removedProduct;
 
   try {
+    await ensureProductCacheInitialized();
     removedProduct = removeProductFromCache(code);
 
     if (!removedProduct) {

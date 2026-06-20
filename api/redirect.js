@@ -1,4 +1,7 @@
-const { getProductByCodeFromCache } = require("../lib/product-cache");
+const {
+  ensureProductCacheInitialized,
+  getProductByCodeFromCache,
+} = require("../lib/product-cache");
 
 function escapeHtmlAttribute(value) {
   return String(value)
@@ -32,6 +35,7 @@ module.exports = async (req, res) => {
   }
 
   try {
+    await ensureProductCacheInitialized();
     const product = getProductByCodeFromCache(code);
 
     if (!product) {

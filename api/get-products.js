@@ -1,4 +1,7 @@
-const { getProductsFromCache } = require("../lib/product-cache");
+const {
+  ensureProductCacheInitialized,
+  getProductsFromCache,
+} = require("../lib/product-cache");
 const { setCorsHeaders } = require("../lib/http");
 
 module.exports = async (req, res) => {
@@ -13,6 +16,7 @@ module.exports = async (req, res) => {
   }
 
   try {
+    await ensureProductCacheInitialized();
     return res.status(200).json(getProductsFromCache());
   } catch (error) {
     console.error("Error reading products cache:", error);

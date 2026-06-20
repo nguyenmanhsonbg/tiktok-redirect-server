@@ -3,6 +3,7 @@ const { query } = require("../lib/db");
 const { readJsonBody, setCorsHeaders } = require("../lib/http");
 const {
   addProductToCache,
+  ensureProductCacheInitialized,
   hasProductInCache,
   removeProductFromCache,
 } = require("../lib/product-cache");
@@ -41,6 +42,8 @@ module.exports = async (req, res) => {
   }
 
   try {
+    await ensureProductCacheInitialized();
+
     for (let attempt = 0; attempt < MAX_SHORT_CODE_ATTEMPTS; attempt += 1) {
       const shortCode = generateShortCode();
       let cached = false;
