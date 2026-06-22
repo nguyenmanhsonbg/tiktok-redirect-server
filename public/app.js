@@ -15,6 +15,7 @@ const productList = document.getElementById("product-list");
 const productCount = document.getElementById("product-count");
 const addProductForm = document.getElementById("add-product-form");
 const logoutButton = document.getElementById("logoutButton");
+let cachedProducts = [];
 
 // Check login state on page load
 window.onload = async () => {
@@ -62,14 +63,22 @@ addProductForm.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ webLink1, webLink2 }),
     });
+    const result = await response.json().catch(() => ({}));
 
     if (response.ok) {
+      const product = normalizeProduct(result.product);
+
+      if (product) {
+        upsertCachedProduct(product);
+        renderProductList(cachedProducts);
+      } else {
+        await loadProductList();
+      }
+
       alert("Product added successfully!");
-      await loadProductList();
       addProductForm.reset();
     } else {
-      const error = await response.json().catch(() => ({}));
-      alert(`Error: ${error.error || "Failed to add product."}`);
+      alert(`Error: ${result.error || "Failed to add product."}`);
     }
   } catch (error) {
     console.error("Failed to add product:", error);
@@ -89,7 +98,7 @@ function logout() {
   loginModal.style.display = "flex";
 }
 
-// Load product list from the backend
+// Load product list from the backend cache
 async function loadProductList() {
   try {
     const response = await fetch(GET_PRODUCTS_API);
@@ -109,43 +118,118 @@ async function loadProductList() {
       return;
     }
 
-    // Clear existing rows
-    productList.innerHTML = "";
-
-    if (productCount) {
-      productCount.textContent = `${products.length} sản phẩm`;
-    }
-
-    // Populate the table with products from the backend
-    products.forEach((product) => {
-      // Expecting fields: id, web_link, deep_link, short_code
-      const id = product.id || "";
-      const deepLink = product.deep_link || "";
-      const webLink = product.web_link || "";
-      const shortCode = product.short_code || "";
-
-      const row = document.createElement("tr");
-
-      row.innerHTML = `
-        <td>${id}</td>
-        <td><a href="${deepLink}" target="_blank" rel="noopener noreferrer">${deepLink}</a></td>
-        <td><a href="${webLink}" target="_blank" rel="noopener noreferrer">${webLink}</a></td>
-        <td>${shortCode}</td>
-        <td class="actions">
-          <button onclick="copyToClipboard('${shortCode}')">Copy code</button>
-          <button class="button-danger" onclick="deleteProduct('${id}')">Delete</button>
-          <button onclick="copyToClipboard('${window.location.origin}/api/redirect?code=${encodeURIComponent(
-            shortCode
-          )}')">Copy Link</button>
-        </td>
-      `;
-
-      productList.appendChild(row);
-    });
+    cachedProducts = products.map(normalizeProduct).filter(Boolean);
+    renderProductList(cachedProducts);
   } catch (error) {
     console.error("Failed to load product list:", error);
     alert("Error loading product list. Please try again.");
   }
+}
+
+function normalizeProduct(product) {
+  if (!product) {
+    return undefined;
+  }
+
+  const shortCode = product.short_code || product.shortCode || product.id;
+
+  if (!shortCode) {
+    return undefined;
+  }
+
+  return {
+    id: product.id || shortCode,
+    web_link: product.web_link || product.webLink1 || "",
+    deep_link: product.deep_link || product.deepLink || "",
+    short_code: shortCode,
+  };
+}
+
+function upsertCachedProduct(product) {
+  cachedProducts = cachedProducts.filter(
+    (item) => item.short_code !== product.short_code
+  );
+  cachedProducts.unshift(product);
+}
+
+function removeCachedProduct(shortCode) {
+  cachedProducts = cachedProducts.filter(
+    (product) => product.short_code !== shortCode && product.id !== shortCode
+  );
+}
+
+function appendTextCell(row, text) {
+  const cell = document.createElement("td");
+  cell.textContent = text;
+  row.appendChild(cell);
+}
+
+function appendLinkCell(row, href) {
+  const cell = document.createElement("td");
+
+  if (href) {
+    const link = document.createElement("a");
+    link.href = href;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = href;
+    cell.appendChild(link);
+  }
+
+  row.appendChild(cell);
+}
+
+function appendActionsCell(row, shortCode) {
+  const cell = document.createElement("td");
+  cell.className = "actions";
+
+  const copyCodeButton = document.createElement("button");
+  copyCodeButton.type = "button";
+  copyCodeButton.textContent = "Copy code";
+  copyCodeButton.addEventListener("click", () => copyToClipboard(shortCode));
+
+  const deleteButton = document.createElement("button");
+  deleteButton.type = "button";
+  deleteButton.className = "button-danger";
+  deleteButton.textContent = "Delete";
+  deleteButton.addEventListener("click", () => deleteProduct(shortCode));
+
+  const copyLinkButton = document.createElement("button");
+  copyLinkButton.type = "button";
+  copyLinkButton.textContent = "Copy Link";
+  copyLinkButton.addEventListener("click", () => {
+    copyToClipboard(
+      `${window.location.origin}/api/redirect?code=${encodeURIComponent(shortCode)}`
+    );
+  });
+
+  cell.appendChild(copyCodeButton);
+  cell.appendChild(deleteButton);
+  cell.appendChild(copyLinkButton);
+  row.appendChild(cell);
+}
+
+function renderProductList(products) {
+  productList.innerHTML = "";
+
+  if (productCount) {
+    productCount.textContent = `${products.length} sản phẩm`;
+  }
+
+  products.forEach((product) => {
+    const id = product.id || "";
+    const deepLink = product.deep_link || "";
+    const webLink = product.web_link || "";
+    const shortCode = product.short_code || "";
+
+    const row = document.createElement("tr");
+    appendTextCell(row, id);
+    appendLinkCell(row, deepLink);
+    appendLinkCell(row, webLink);
+    appendTextCell(row, shortCode);
+    appendActionsCell(row, shortCode);
+    productList.appendChild(row);
+  });
 }
 
 // Copy text to clipboard
@@ -166,8 +250,9 @@ async function deleteProduct(shortCode) {
     });
 
     if (response.ok) {
+      removeCachedProduct(shortCode);
+      renderProductList(cachedProducts);
       alert("Product deleted successfully!");
-      await loadProductList();
     } else {
       const error = await response.json().catch(() => ({}));
       alert(`Error: ${error.error || "Failed to delete product."}`);

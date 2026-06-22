@@ -74,9 +74,9 @@ module.exports = async (req, res) => {
           message: "Product added successfully.",
           product: {
             id: product.id,
-            shortCode: product.short_code,
-            deepLink: product.deep_link,
-            webLink1: product.web_link,
+            web_link: product.web_link,
+            deep_link: product.deep_link,
+            short_code: product.short_code,
           },
         });
       } catch (error) {
