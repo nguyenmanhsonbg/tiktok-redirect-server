@@ -1,7 +1,7 @@
 const fs = require("fs");
 const http = require("http");
 const path = require("path");
-const { loadProductsCacheFromDatabase } = require("./lib/product-cache");
+const { ensureProductCacheInitialized } = require("./lib/product-cache");
 
 const routes = {
   "/api/add-product": require("./api/add-product"),
@@ -222,7 +222,7 @@ const PORT = process.env.PORT || 3000;
 
 async function startServer() {
   try {
-    const productCount = await loadProductsCacheFromDatabase();
+    const productCount = await ensureProductCacheInitialized();
     console.log(`Loaded ${productCount} products into cache.`);
   } catch (error) {
     console.error("Failed to load product cache from database:", error);

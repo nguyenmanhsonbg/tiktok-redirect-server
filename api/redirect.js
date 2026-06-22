@@ -1,6 +1,6 @@
 const {
+  ensureProductCacheInitialized,
   getProductByCodeFromCache,
-  isProductCacheInitialized,
 } = require("../lib/product-cache");
 
 function escapeHtmlAttribute(value) {
@@ -35,10 +35,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    if (!isProductCacheInitialized()) {
-      return res.status(404).json({ error: "Product not found." });
-    }
-
+    await ensureProductCacheInitialized();
     const product = getProductByCodeFromCache(code);
 
     if (!product) {
