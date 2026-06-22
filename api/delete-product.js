@@ -4,6 +4,7 @@ const {
   ensureProductCacheInitialized,
   removeProductFromCache,
   restoreProductToCache,
+  setProductCacheDebugHeaders,
 } = require("../lib/product-cache");
 
 module.exports = async (req, res) => {
@@ -46,6 +47,8 @@ module.exports = async (req, res) => {
       console.warn(`Product ${code} was deleted from cache but was not found in database.`);
     }
 
+    res.setHeader("Cache-Control", "no-store");
+    setProductCacheDebugHeaders(res);
     return res.status(200).json({ message: "Product deleted successfully." });
   } catch (error) {
     if (removedProduct) {

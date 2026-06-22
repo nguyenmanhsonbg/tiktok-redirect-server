@@ -6,6 +6,7 @@ const {
   ensureProductCacheInitialized,
   hasProductInCache,
   removeProductFromCache,
+  setProductCacheDebugHeaders,
 } = require("../lib/product-cache");
 
 const MAX_SHORT_CODE_ATTEMPTS = 5;
@@ -70,6 +71,8 @@ module.exports = async (req, res) => {
           [shortCode, webLink1, webLink2, shortCode]
         );
 
+        res.setHeader("Cache-Control", "no-store");
+        setProductCacheDebugHeaders(res);
         return res.status(201).json({
           message: "Product added successfully.",
           product: {

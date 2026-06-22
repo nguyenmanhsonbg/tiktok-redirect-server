@@ -1,6 +1,7 @@
 const {
   ensureProductCacheInitialized,
   getProductByCodeFromCache,
+  setProductCacheDebugHeaders,
 } = require("../lib/product-cache");
 
 function escapeHtmlAttribute(value) {
@@ -36,6 +37,7 @@ module.exports = async (req, res) => {
 
   try {
     await ensureProductCacheInitialized();
+    setProductCacheDebugHeaders(res);
     const product = getProductByCodeFromCache(code);
 
     if (!product) {

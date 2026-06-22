@@ -101,7 +101,7 @@ function logout() {
 // Load product list from the backend cache
 async function loadProductList() {
   try {
-    const response = await fetch(GET_PRODUCTS_API);
+    const response = await fetch(GET_PRODUCTS_API, { cache: "no-store" });
 
     if (!response.ok) {
       const errBody = await response.json().catch(() => ({}));

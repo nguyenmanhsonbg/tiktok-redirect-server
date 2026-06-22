@@ -1,6 +1,7 @@
 const {
   ensureProductCacheInitialized,
   getProductsFromCache,
+  setProductCacheDebugHeaders,
 } = require("../lib/product-cache");
 const { setCorsHeaders } = require("../lib/http");
 
@@ -17,6 +18,8 @@ module.exports = async (req, res) => {
 
   try {
     await ensureProductCacheInitialized();
+    res.setHeader("Cache-Control", "no-store");
+    setProductCacheDebugHeaders(res);
     return res.status(200).json(getProductsFromCache());
   } catch (error) {
     console.error("Error reading products cache:", error);
