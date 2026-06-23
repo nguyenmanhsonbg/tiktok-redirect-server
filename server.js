@@ -1,14 +1,8 @@
 const fs = require("fs");
 const http = require("http");
 const path = require("path");
+const { handleApiRequest } = require("./lib/api-router");
 const { ensureProductCacheInitialized } = require("./lib/product-cache");
-
-const routes = {
-  "/api/add-product": require("./api/add-product"),
-  "/api/delete-product": require("./api/delete-product"),
-  "/api/get-products": require("./api/get-products"),
-  "/api/redirect": require("./api/redirect"),
-};
 
 const publicRoot = path.join(__dirname, "public");
 const appleAssociationPath = path.join(__dirname, "apple-app-site-association");
@@ -189,15 +183,8 @@ async function handleRequest(req, res) {
 
   req.query = getQuery(requestUrl.searchParams);
 
-  const routeHandler = routes[requestUrl.pathname];
-
-  if (routeHandler) {
-    await routeHandler(req, res);
-    return;
-  }
-
   if (requestUrl.pathname.startsWith("/api/")) {
-    res.status(404).json({ error: "API route not found." });
+    await handleApiRequest(req, res, requestUrl.pathname);
     return;
   }
 
