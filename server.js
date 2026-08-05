@@ -156,13 +156,8 @@ const app = http.createServer((req, res) => {
 const PORT = process.env.PORT || 3000;
 
 async function startServer() {
-  try {
-    const productCount = await ensureProductCacheInitialized();
-    console.log(`Loaded ${productCount} products into cache.`);
-  } catch (error) {
-    console.error("Failed to load product cache from database:", error);
-    process.exit(1);
-  }
+  const productCount = await ensureProductCacheInitialized();
+  console.log(`Initialized product cache with ${productCount} products.`);
 
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
