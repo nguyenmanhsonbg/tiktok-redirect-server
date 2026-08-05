@@ -2,6 +2,7 @@ const fs = require("fs");
 const http = require("http");
 const path = require("path");
 const { handleApiRequest } = require("./lib/api-router");
+const { attachResponseHelpers } = require("./lib/http");
 const { ensureProductCacheInitialized } = require("./lib/product-cache");
 
 const publicRoot = path.join(__dirname, "public");
@@ -21,59 +22,6 @@ const mimeTypes = {
   ".txt": "text/plain; charset=utf-8",
   ".webp": "image/webp",
 };
-
-function attachResponseHelpers(res) {
-  res.status = function status(code) {
-    res.statusCode = code;
-    return res;
-  };
-
-  res.json = function json(value) {
-    const body = JSON.stringify(value);
-
-    if (!res.hasHeader("Content-Type")) {
-      res.setHeader("Content-Type", "application/json; charset=utf-8");
-    }
-
-    res.setHeader("Content-Length", Buffer.byteLength(body));
-    res.end(body);
-    return res;
-  };
-
-  res.send = function send(value) {
-    if (Buffer.isBuffer(value)) {
-      res.end(value);
-      return res;
-    }
-
-    if (typeof value === "object" && value !== null) {
-      return res.json(value);
-    }
-
-    const body = String(value ?? "");
-
-    if (!res.hasHeader("Content-Type")) {
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-    }
-
-    res.setHeader("Content-Length", Buffer.byteLength(body));
-    res.end(body);
-    return res;
-  };
-
-  res.redirect = function redirect(statusOrUrl, maybeUrl) {
-    const statusCode = typeof statusOrUrl === "number" ? statusOrUrl : 302;
-    const location = typeof statusOrUrl === "number" ? maybeUrl : statusOrUrl;
-    const body = `Redirecting to ${location}`;
-
-    res.statusCode = statusCode;
-    res.setHeader("Location", location);
-    res.setHeader("Content-Type", "text/plain; charset=utf-8");
-    res.setHeader("Content-Length", Buffer.byteLength(body));
-    res.end(body);
-    return res;
-  };
-}
 
 function getRequestUrl(req) {
   return new URL(req.url || "/", "http://localhost");
