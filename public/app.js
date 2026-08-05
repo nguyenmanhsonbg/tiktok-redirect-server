@@ -2,9 +2,17 @@ const GET_PRODUCTS_API = "/api/get-products";
 const ADD_PRODUCT_API = "/api/add-product";
 const DELETE_PRODUCT_API = "/api/delete-product";
 
-// Default credentials
-const defaultUsername = "admin";
-const defaultPassword = "admin";
+const ADMIN_CREDENTIALS = Object.freeze({
+  username: "admin",
+  password: "admin",
+});
+
+function isAdminLogin(username, password) {
+  return (
+    username === ADMIN_CREDENTIALS.username &&
+    password === ADMIN_CREDENTIALS.password
+  );
+}
 
 // Get references to modal, container, and form elements
 const loginModal = document.getElementById("loginModal");
@@ -38,7 +46,7 @@ loginForm.addEventListener("submit", (e) => {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
 
-  if (username === defaultUsername && password === defaultPassword) {
+  if (isAdminLogin(username, password)) {
     localStorage.setItem("isLoggedIn", "true");
 
     loginModal.style.display = "none";
